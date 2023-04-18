@@ -69,7 +69,8 @@ class WebSocketHandler:
         :param topic_name: The topic name.
         :return: A dictionary with the topic information.
         """
-        topic_info = json.load(open("topics.json", "r"))
+        with open("topics.json", "r") as file:
+            topic_info = json.load(file)
         for topic in topic_info["topics"]:
             if topic["name"] == topic_name:
                 return topic
