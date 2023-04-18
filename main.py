@@ -14,7 +14,14 @@ class WebSocketHandler:
         self.username = None
 
     # Función para enviar mensajes a otros usuarios
-    async def send_message(self, recipient, message):
+    async def send_message(self, recipient:str, message:dict[str, str]) -> None:
+        """
+        Method to send a message to a recipient.
+
+        :param recipient: The recipient username.
+        :param message: The message to send in dict format.
+        :return: None
+        """
         if recipient in CONNECTED_USERS:
             recipient_socket = CONNECTED_USERS[recipient]
             await recipient_socket.websocket.send(json.dumps(message))
@@ -25,7 +32,8 @@ class WebSocketHandler:
 
     async def authenticate(self, token: str) -> bool:
         """
-        Funciton to authenticate the user.
+        Method to authenticate the user.
+
         :param token: The user token.
         :return: True if the token is valid, False otherwise.
         """
@@ -55,8 +63,13 @@ class WebSocketHandler:
             return False
 
     # Función para procesar mensajes entrantes
-    async def handle_message(self, info_message:dict|None=None):
-        """Código para procesar el mensaje y enviarlo al destinatario o tópico adecuado.  """
+    async def handle_message(self, info_message:dict|None=None) -> None:
+        """
+        Method to handle incoming messages and be sent to the correct destinataries.
+
+        :param info_message: The message to be sent.
+        :return: None
+        """
         print("handle_message -> ", info_message["message"])
         if info_message is not None:
             topic_name = info_message["topic"]
@@ -78,25 +91,20 @@ class WebSocketHandler:
                     }
                     await self.send_message(recipient=recipient, message=message_complete)
 
-        # # Si el mensaje contiene un destinatario, lo enviamos a ese destinatario.
-        # if "destinatario" in message:
-        #     await self.send_message(recipient=message['destinatario'], message=message['contenido'])
-        # # Si el mensaje contiene un canal, lo enviamos a todos los usuarios suscritos a ese canal.
-        # elif 'canal' in message:
-        #     channel = message['canal']
-        #     if channel in CHANNELS:
-        #         for recipient in CHANNELS[channel]:
-        #             await self.send_message(recipient=recipient, message=message['contenido'])
-            
-
-    # Función para enviar actualizaciones a los usuarios suscritos
     async def send_updates(self):
+        """
+        Method to send updates of pending messages per user.
+        """
         # Código para enviar actualizaciones a los usuarios suscritos
         pass
 
 
-    # Función para ejecutar el bucle principal del WebSocket
-    async def run(self):
+    async def run(self) -> None:
+        """
+        Method to run the WebSocketHandler.
+
+        :return: None
+        """
         async for message in self.websocket:
             print(f"Mensaje recibido: {message}")
             try:
@@ -163,7 +171,14 @@ CHANNELS = {
     }
 }
 # Función de servidor WebSocket para aceptar conexiones entrantes
-async def websocket_server(websocket, path: str):
+async def websocket_server(websocket, path: str) -> None:
+    """
+    Function to accept incoming WebSocket connections and validate
+    credentials if are correct.
+
+    :param websocket: The WebSocket connection.
+    :param path: The path of the WebSocket connection like url params.
+    """
     websocket_handler = WebSocketHandler(websocket)
     access = await websocket_handler.authenticate(token=path[1:])
     if not access:

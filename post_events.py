@@ -1,3 +1,4 @@
+# pylint: enable=E0401
 import socketio
 
 sio = socketio.Client()
