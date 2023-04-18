@@ -91,9 +91,10 @@ class WebSocketHandler:
                     }
                     await self.send_message(recipient=recipient, message=message_complete)
 
-    async def send_updates(self):
+    async def send_updates(self) -> None:
         """
         Method to send updates of pending messages per user.
+        :return: None
         """
         # Código para enviar actualizaciones a los usuarios suscritos
         pass
