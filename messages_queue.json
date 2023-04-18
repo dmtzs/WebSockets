@@ -1,0 +1,19 @@
+{
+    "messages":[
+        {
+            "topic_id": "ABCD4321",
+            "content": "message",
+            "not_delivered_to_user_id_topic": ["ABCD1236"]
+        },
+        {
+            "topic_id": "ABCD4321",
+            "content": "message",
+            "not_delivered_to_user_id_topic": ["ABCD1236"]
+        },
+        {
+            "topic_id": "ABCD1236",
+            "content": "message",
+            "not_delivered_to_user_id_topic": ["ABCD1236"]
+        }
+    ]
+}

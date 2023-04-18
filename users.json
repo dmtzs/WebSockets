@@ -1,0 +1,22 @@
+{
+    "users": [
+        {
+            "username": "diego",
+            "id": 1,
+            "user_topic_id": "ABCD4321",
+            "subscribed_topics": ["ABCD4321", "topic ids is usere false"]
+        },
+        {
+            "username": "memoor",
+            "id": 2,
+            "user_topic_id": "ABCD1235",
+            "subscribed_topics": ["ABCD4321", "topic ids is usere false"]
+        },
+        {
+            "username": "omar",
+            "id": 3,
+            "user_topic_id": "ABCD1236",
+            "subscribed_topics": ["ABCD4321", "topic ids is usere false"]
+        }
+    ]
+}
