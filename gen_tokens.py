@@ -5,7 +5,7 @@ except ImportError as err_imp:
     print(f"The following import error occurred: {err_imp}")
 
 # Definir la clave secreta para firmar el token
-secret_key = "B7PwGjhYohg"
+SECRET_KEY = "B7PwGjhYohg"
 
 def encode_token(username: str, days:int=0, minutes:int=120, **kwargs) -> str:
     """
@@ -17,16 +17,16 @@ def encode_token(username: str, days:int=0, minutes:int=120, **kwargs) -> str:
     :param kwargs: Any other data to include in the token payload
     :return: The generated token
     """
-    payload = {
+    payload_core = {
         'exp': datetime.utcnow() + timedelta(days=days, minutes=minutes),
         'iat': datetime.utcnow(),
         'sub': username
     }
     if kwargs:
-        payload.update(kwargs)
+        payload_core.update(kwargs)
 
 
-    return jwt.encode( payload, secret_key, algorithm="HS256")
+    return jwt.encode( payload, SECRET_KEY, algorithm="HS256")
 
 if __name__ == "__main__":
     # Definir los datos a incluir en el payload del token (pueden ser cualquier datos que quieras incluir)

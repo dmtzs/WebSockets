@@ -6,7 +6,6 @@ try:
     import websockets
 except ImportError as err_imp:
     print(f"The following import error occurred: {err_imp}")
-    exit(1)
 
 # Definir una clase para manejar las conexiones WebSocket
 class WebSocketHandler:
@@ -19,28 +18,30 @@ class WebSocketHandler:
         if recipient in CONNECTED_USERS:
             recipient_socket = CONNECTED_USERS[recipient]
             await recipient_socket.websocket.send(json.dumps(message))
-            print(f"Mensaje enviado a destinatario {recipient}: {message}")
+            print(f"Message sent to destinatary: {recipient}: {message}")
         else:
-            print(f"Destinatario [{recipient}] no conectado, almacenamos el mensaje para entregarlo más tarde.")
+            print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
             PENDING_MESSAGES[recipient].append(message)
 
-    async def authenticate(self, token: str):
-        """Función para autenticar a un usuario usando tokens JWT.
-            Código para autenticar al usuario usando el token JWT
-            Si la autenticación es exitosa, establecer el nombre de usuario.  """
+    async def authenticate(self, token: str) -> bool:
+        """
+        Funciton to authenticate the user.
+        :param token: The user token.
+        :return: True if the token is valid, False otherwise.
+        """
         try:
-            # Verificamos el token JWT del usuario.
+            # Verify the user token.
             payload = jwt.decode(token, 'B7PwGjhYohg', algorithms=['HS256'])
             self.username = payload['sub']
             CONNECTED_USERS[self.username] = self.websocket
-            print(f"Usuario conectado: {self.username}.")
+            print(f"Connected user: {self.username}.")
 
-            # Verificar en pendig_message si hay mensages pendientes.
+            # TODO: Verify if there are pending messages.
 
             return True
         except:
             # Si el token no es válido.
-            print(f"token no valido!")
+            print("Invalid token")
             return False
 
     async def subscribe(self, channel):
