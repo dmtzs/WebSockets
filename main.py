@@ -1,4 +1,5 @@
 try:
+    import os
     import jwt
     import json
     import asyncio
@@ -24,7 +25,9 @@ class WebSocketHandler:
         """
         if recipient in CONNECTED_USERS:
             recipient_socket = CONNECTED_USERS[recipient]
-            await recipient_socket.websocket.send(json.dumps(message))
+            if isinstance(message, dict):
+                message = json.dumps(message)
+            await recipient_socket.websocket.send(message)
             print(f"Message sent to destinatary: {recipient}: {message}")
         else:
             print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
@@ -43,16 +46,13 @@ class WebSocketHandler:
             self.username = payload['sub']
             CONNECTED_USERS[self.username] = self.websocket
             print(f"Connected user: {self.username}.")
-
-            # TODO: Verify if there are pending messages.
-
             return True
         except:
             # Si el token no es válido.
             print("Invalid token")
             return False
 
-    async def subscribe(self, channel):
+    async def subscribe(self, channel):# TODO: Still in development
         """Función para suscribirse a un canal o tema.  """
         # Verificar que el canal exista y el usuario tenga permiso para suscribirse.
         if channel in CHANNELS and self.username in CHANNELS[channel]:
@@ -61,8 +61,20 @@ class WebSocketHandler:
             return True
         else:
             return False
+        
+    async def get_topic(self, topic_name:str) -> dict[str, str|bool]|None:
+        """
+        Method to get the topic information.
 
-    # Función para procesar mensajes entrantes
+        :param topic_name: The topic name.
+        :return: A dictionary with the topic information.
+        """
+        topic_info = json.load(open("topics.json", "r"))
+        for topic in topic_info["topics"]:
+            if topic["name"] == topic_name:
+                return topic
+        return None
+
     async def handle_message(self, info_message:dict|None=None) -> None:
         """
         Method to handle incoming messages and be sent to the correct destinataries.
@@ -70,26 +82,57 @@ class WebSocketHandler:
         :param info_message: The message to be sent.
         :return: None
         """
-        print("handle_message -> ", info_message["message"])
-        if info_message is not None:
-            topic_name = info_message["topic"]
-            print("Info message not none")
-            if topic_name in CHANNELS["public"]["topicos"] and self.username in CHANNELS["public"]["usuarios"]:
-                print("entro a publico")
-                for recipient in CHANNELS["public"]["usuarios"]:
-                    message_complete = {
-                        "topic_name": topic_name,
-                        "content": info_message["message"]
-                    }
-                    await self.send_message(recipient=recipient, message=message_complete)
-            
-            elif topic_name in CHANNELS["private"]["topicos"] and self.username in CHANNELS["private"]["usuarios"]:
-                for recipient in CHANNELS["private"]["usuarios"]:
-                    message_complete = {
-                        "topic_name": topic_name,
-                        "content": info_message["message"]
-                    }
-                    await self.send_message(recipient=recipient, message=message_complete)
+        try:
+            if info_message is not None:
+                topic_name = info_message["topic"]
+                if topic_name == "error":
+                    # Send the error message to the user that sent the error.
+                    await self.send_message(recipient=self.username, message=info_message)
+                else:
+                    topic_info = await self.get_topic(topic_name)
+                    if topic_info is not None:
+                        if not topic_info["is_user"]:
+                            if self.username in topic_info["members"]:
+                                for recipient in topic_info["members"]:
+                                    message_complete = {
+                                        "topic_name": topic_name,
+                                        "content": info_message["message"]
+                                    }
+                                    await self.send_message(recipient=recipient, message=message_complete)
+                            else:
+                                # Send the error message to the user that sent the error.
+                                info_message = {
+                                    "topic": "error",
+                                    "message": "You are not a member of this topic",
+                                    "topic_name": topic_name
+                                }
+                                await self.send_message(recipient=self.username, message=info_message)
+                        else:
+                            message_complete = {
+                                "user_source": self.username,
+                                "content": info_message["message"]
+                            }
+                            await self.send_message(recipient=topic_name, message=message_complete)
+                    else:
+                        # Send the error message to the user that sent the error.
+                        info_message = {
+                            "topic": "error",
+                            "message": "Topic not found",
+                            "topic_name": topic_name
+                        }
+                        await self.send_message(recipient=self.username, message=info_message)
+            else:
+                print("No message received")
+                
+        except Exception as err:
+            print(f"Error in handle_message: {traceback.format_exc()}")
+            # Send the error message to the user that sent the error.
+            info_message = {
+                "topic": "error",
+                "message": "Error in handle_message, contact the administrator",
+                "error": str(err)
+            }
+            await self.send_message(recipient=self.username, message=info_message)
 
     async def send_updates(self) -> None:
         """
@@ -107,18 +150,12 @@ class WebSocketHandler:
         :return: None
         """
         async for message in self.websocket:
-            print(f"Mensaje recibido: {message}")
+            print(f"Message received: {message}")
             try:
                 data = json.loads(message)
-               
                 action = data['action']
 
-                if action == 'authenticate':
-                    if 'token' not in data:
-                        print("no se mando token..")
-
-                    await self.authenticate(data['token'])
-                elif action == 'subscribe':
+                if action == 'subscribe':
                     channel = data['channel']
                     subscribed = await self.subscribe(channel=channel)
                     if subscribed:
@@ -137,30 +174,34 @@ class WebSocketHandler:
                         }))
 
                 elif action == 'message':
-                    print("entro action message")
                     info_message = {
                         "topic": data["topic_name"],
                         "message": data["content"]
                     }
-                    print(f"info_message: {info_message}")
                     await self.handle_message(info_message)
 
                 else:
-                    # Acción no reconocida
-                    pass
-            except Exception:
-                # Error al procesar el mensaje
-                print(f"Error al procesar el mensaje: {traceback.format_exc()}")
-        # Se cerró la conexión WebSocket
+                    # Unknown action
+                    info_message = {
+                        "topic": "error",
+                        "message": "Unknown action received",
+                        "action": action
+                    }
+            except Exception as err:
+                # Error at processing the message
+                print(f"Error at processing the message: {traceback.format_exc()}")
+                info_message = {
+                    "topic": "error",
+                    "message": "Error at processing the message, contact technical support",
+                    "error": str(err)
+                }
+                await self.handle_message(info_message)
+        # Close the websocket connection
         await self.websocket.close()
 
 
-# Lista de usuarios conectados y sus respectivos objetos WebSocketHandler
-CONNECTED_USERS = {}
-# Diccionario de mensajes pendientes para usuarios desconectados
+CONNECTED_USERS = {} # Dictionary to store connected users.
 PENDING_MESSAGES= {}
-# Esta variable guarda la información de los canales a los que los usuarios pueden suscribirse.
-# La clave es el nombre del canal y el valor es una lista de usuarios autorizados.
 CHANNELS = {
     "public": {
         "usuarios": ["diego", "omar", "satoshi"],
@@ -171,7 +212,7 @@ CHANNELS = {
         "topicos": ["trabajo"]
     }
 }
-# Función de servidor WebSocket para aceptar conexiones entrantes
+
 async def websocket_server(websocket, path: str) -> None:
     """
     Function to accept incoming WebSocket connections and validate
@@ -184,16 +225,16 @@ async def websocket_server(websocket, path: str) -> None:
     access = await websocket_handler.authenticate(token=path[1:])
     if not access:
         await websocket.close()
-
     CONNECTED_USERS[websocket_handler.username] = websocket_handler
     # print(f"Connected users: {CONNECTED_USERS}")
+    # TODO: Verify if there are pending messages.
     asyncio.create_task(websocket_handler.send_updates())
     await websocket_handler.run()
     if websocket_handler.username in CONNECTED_USERS:
         del CONNECTED_USERS[websocket_handler.username]
 
 if __name__ == "__main__":
-    # Configuración del servidor WebSocket
+    # Code to run the WebSocket server
     print("Run server WS!")
     start_server = websockets.serve(websocket_server, "localhost", 5000)
     asyncio.get_event_loop().run_until_complete(start_server)
