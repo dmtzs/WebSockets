@@ -1,0 +1,26 @@
+{
+    "topics": [
+        {
+            "topic_name": "diego",
+            "is_user": true
+        },
+        {
+            "topic_name": "gdcode",
+            "is_user": false,
+            "members": ["memoor"],
+            "is_private": true
+        },
+        {
+            "topic_name": "noticias",
+            "is_user": false,
+            "members": ["diego", "omar", "satoshi"],
+            "is_private": false
+        },
+        {
+            "topic_name": "general",
+            "is_user": false,
+            "members": ["diego", "omar"],
+            "is_private": false
+        }
+    ]
+}
