@@ -51,12 +51,12 @@ class WebSocketHandler:
             print("Invalid token")
             return False
 
-    async def suscribe(self, topic_name:str) -> bool:# TODO: Still in development
+    async def subscribe(self, topic_name:str) -> bool:# TODO: Still in development
         """
         Method to subscribe the user to a public topic.
 
         :param topic_name: The topic name that user wants to subscribe.
-        :return: True if the user was suscribed, False otherwise.
+        :return: True if the user was subscribed, False otherwise.
         """
         # Verificar que el canal exista y el usuario tenga permiso para suscribirse.
         # if channel in CHANNELS and self.username in CHANNELS[channel]:
@@ -110,7 +110,7 @@ class WebSocketHandler:
                                     info_message = {
                                         "topic": "error",
                                         "topic_name": topic_name,
-                                        "message": "You are not a member of this topic but you can suscribe to this topic cause is public"
+                                        "message": "You are not a member of this topic but you can subscribe to this topic cause is public"
                                     }
                                 else:
                                     info_message = {
@@ -160,6 +160,7 @@ class WebSocketHandler:
                 if user == self.username:
                     del messages["not_delivered_to_user_id_topic"]
                     await self.send_message(recipient=user, message=messages)
+                    # TODO: Validate if message was sent, if not return false
         # clear the pending messages
         with open("pending_messages.json", "w") as file:
             json.dump(pending_messages, file)
