@@ -178,21 +178,21 @@ class WebSocketHandler:
                 action = data['action']
 
                 if action == 'subscribe':
-                    channel = data['channel']
-                    subscribed = await self.subscribe(channel=channel)
+                    topic_name = data['topic_name']
+                    subscribed = await self.subscribe(topic_name=topic_name)
                     if subscribed:
                         # Si la suscripción fue exitosa, enviar un mensaje de confirmación al usuario.
                         await self.websocket.send(json.dumps({
-                            "accion": "subscribe",
-                            "canal": channel,
-                            "resultado": "ok"
+                            "action": "subscribe",
+                            "topic_name": topic_name,
+                            "result": "ok"
                         }))
                     else:
                         # Si la suscripción no fue exitosa, enviar un mensaje de error al usuario.
                         await self.websocket.send(json.dumps({
-                            "accion": "subscribe",
-                            "canal": channel,
-                            "resultado": "error"
+                            "action": "subscribe",
+                            "topic_name": topic_name,
+                            "result": "error"
                         }))
 
                 elif action == 'message':
