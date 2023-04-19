@@ -30,7 +30,7 @@ class WebSocketHandler:
             print(f"Message sent to destinatary: {recipient}: {message}")
         else:
             print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
-            PENDING_MESSAGES[recipient].append(message)
+            # PENDING_MESSAGES[recipient].append(message)
 
     async def authenticate(self, token: str) -> bool:
         """
@@ -51,15 +51,20 @@ class WebSocketHandler:
             print("Invalid token")
             return False
 
-    async def subscribe(self, channel):# TODO: Still in development
-        """Función para suscribirse a un canal o tema.  """
+    async def subscribe(self, topic_name:str) -> bool:# TODO: Still in development
+        """
+        Method to subscribe the user to a public topic.
+
+        :param topic_name: The topic name that user wants to subscribe.
+        :return: True if the user was subscribed, False otherwise.
+        """
         # Verificar que el canal exista y el usuario tenga permiso para suscribirse.
-        if channel in CHANNELS and self.username in CHANNELS[channel]:
-            # Agregar al usuario a la lista de usuarios suscritos a este canal.
-            CHANNELS[channel].append(self.username)
-            return True
-        else:
-            return False
+        # if channel in CHANNELS and self.username in CHANNELS[channel]:
+        #     # Agregar al usuario a la lista de usuarios suscritos a este canal.
+        #     CHANNELS[channel].append(self.username)
+        #     return True
+        # else:
+        #     return False
         
     async def get_topic(self, topic_name:str) -> dict[str, str|bool]|None:
         """
@@ -105,7 +110,7 @@ class WebSocketHandler:
                                     info_message = {
                                         "topic": "error",
                                         "topic_name": topic_name,
-                                        "message": "You are not a member of this topic but you can suscribe to this topic cause is public"
+                                        "message": "You are not a member of this topic but you can subscribe to this topic cause is public"
                                     }
                                 else:
                                     info_message = {
@@ -146,9 +151,19 @@ class WebSocketHandler:
         Method to send updates of pending messages per user.
         :return: None
         """
-        # Código para enviar actualizaciones a los usuarios suscritos
-        pass
-
+        # load from json file the pending messages to be sent
+        with open("pending_messages.json", "r") as file:
+            pending_messages = json.load(file)
+        # send the pending messages
+        for messages in pending_messages["messages"]:
+            for user in messages["not_delivered_to_user_id_topic"]:
+                if user == self.username:
+                    del messages["not_delivered_to_user_id_topic"]
+                    await self.send_message(recipient=user, message=messages)
+                    # TODO: Validate if message was sent, if not return false
+        # clear the pending messages
+        with open("pending_messages.json", "w") as file:
+            json.dump(pending_messages, file, indent=4)
 
     async def run(self) -> None:
         """
@@ -163,21 +178,21 @@ class WebSocketHandler:
                 action = data['action']
 
                 if action == 'subscribe':
-                    channel = data['channel']
-                    subscribed = await self.subscribe(channel=channel)
+                    topic_name = data['topic_name']
+                    subscribed = await self.subscribe(topic_name=topic_name)
                     if subscribed:
                         # Si la suscripción fue exitosa, enviar un mensaje de confirmación al usuario.
                         await self.websocket.send(json.dumps({
-                            "accion": "subscribe",
-                            "canal": channel,
-                            "resultado": "ok"
+                            "action": "subscribe",
+                            "topic_name": topic_name,
+                            "result": "ok"
                         }))
                     else:
                         # Si la suscripción no fue exitosa, enviar un mensaje de error al usuario.
                         await self.websocket.send(json.dumps({
-                            "accion": "subscribe",
-                            "canal": channel,
-                            "resultado": "error"
+                            "action": "subscribe",
+                            "topic_name": topic_name,
+                            "result": "error"
                         }))
 
                 elif action == 'message':
@@ -208,17 +223,16 @@ class WebSocketHandler:
 
 
 CONNECTED_USERS = {} # Dictionary to store connected users.
-PENDING_MESSAGES= {}
-CHANNELS = {
-    "public": {
-        "usuarios": ["diego", "omar", "satoshi"],
-        "topicos": ["noticias", "deportes"]
-    },
-    "private": {
-        "usuarios": ["diego", "satoshi"],
-        "topicos": ["trabajo"]
-    }
-}
+# CHANNELS = {
+#     "public": {
+#         "usuarios": ["diego", "omar", "satoshi"],
+#         "topicos": ["noticias", "deportes"]
+#     },
+#     "private": {
+#         "usuarios": ["diego", "satoshi"],
+#         "topicos": ["trabajo"]
+#     }
+# }
 
 async def websocket_server(websocket, path: str) -> None:
     """
@@ -233,8 +247,6 @@ async def websocket_server(websocket, path: str) -> None:
     if not access:
         await websocket.close()
     CONNECTED_USERS[websocket_handler.username] = websocket_handler
-    # print(f"Connected users: {CONNECTED_USERS}")
-    # TODO: Verify if there are pending messages.
     asyncio.create_task(websocket_handler.send_updates())
     await websocket_handler.run()
     if websocket_handler.username in CONNECTED_USERS:
