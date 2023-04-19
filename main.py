@@ -1,5 +1,4 @@
 try:
-    import os
     import jwt
     import json
     import asyncio
@@ -72,7 +71,7 @@ class WebSocketHandler:
         with open("topics.json", "r") as file:
             topic_info = json.load(file)
         for topic in topic_info["topics"]:
-            if topic["name"] == topic_name:
+            if topic["topic_name"] == topic_name:
                 return topic
         return None
 
@@ -102,11 +101,18 @@ class WebSocketHandler:
                                     await self.send_message(recipient=recipient, message=message_complete)
                             else:
                                 # Send the error message to the user that sent the error.
-                                info_message = {
-                                    "topic": "error",
-                                    "message": "You are not a member of this topic",
-                                    "topic_name": topic_name
-                                }
+                                if not topic_info["is_private"]:
+                                    info_message = {
+                                        "topic": "error",
+                                        "topic_name": topic_name,
+                                        "message": "You are not a member of this topic but you can suscribe to this topic cause is public"
+                                    }
+                                else:
+                                    info_message = {
+                                        "topic": "error",
+                                        "topic_name": topic_name,
+                                        "message": "You are not a member of this topic, you need to request access to owner cause is private"
+                                    }
                                 await self.send_message(recipient=self.username, message=info_message)
                         else:
                             message_complete = {
@@ -118,8 +124,8 @@ class WebSocketHandler:
                         # Send the error message to the user that sent the error.
                         info_message = {
                             "topic": "error",
-                            "message": "Topic not found",
-                            "topic_name": topic_name
+                            "topic_name": topic_name,
+                            "message": "Topic not found"
                         }
                         await self.send_message(recipient=self.username, message=info_message)
             else:

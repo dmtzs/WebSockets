@@ -1,16 +1,28 @@
 # API WS
 
 ### Conexion
-```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTg3NDgsImlhdCI6MTY4MTc3MjM0OCwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcGNpb24iOiJjdWFscXVpZXJfY29zYSJ9fQ.wNEyAllFh4wVK_typ0ll2GGQBdIFq9a2MjJBK-5T0zM
-```
+omar
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTc0MDAsImlhdCI6MTY4MTc3MTAwMCwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXBjaW9uIjoiY3VhbHF1aWVyX2Nvc2EifX0.OBt4FOwHzHEprbwLqh_3ErEgkyzEc6iNAyhCgDc-JEs
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4MjQsImlhdCI6MTY4MTkxMjQyNCwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.xiXwJ8Z5LNSC35wBMjVw6V6Jn56wW7ltfPUH3_LXqR8
 ```
 
+diego
+
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTg3NzgsImlhdCI6MTY4MTc3MjM3OCwic3ViIjoic2F0b3NoaSIsInBheWxvYWQiOnsiZGVzY3JpcGNpb24iOiJjdWFscXVpZXJfY29zYSJ9fQ.ZwyPrg1ZD19z3ydooBZAV1S8kHc-qXQG-S3-mYFUybg
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4MDYsImlhdCI6MTY4MTkxMjQwNiwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXB0aW9uIjoiVGVzdCB0b2tlbiJ9fQ.8copNWFY6etWJBwrF11sMJ3WCYizKXjRAGsbRA4TY7U
+```
+
+satoshi
+
+```
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg3NzksImlhdCI6MTY4MTkxMjM3OSwic3ViIjoic2F0b3NoaSIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.5QorLl_ITxLL4Br3PjlGAtjiwdKJ91DNHFyP6lFljrg
+```
+
+memoor
+
+```
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4NDQsImlhdCI6MTY4MTkxMjQ0NCwic3ViIjoibWVtb29yIiwicGF5bG9hZCI6eyJkZXNjcmlwdGlvbiI6IlRlc3QgdG9rZW4ifX0.AWAfwiKvEgfHEDOzrpcya0fUYUKantH_QQEXtie7tw4
 ```
 
 ### Autenticate
@@ -28,17 +40,12 @@ satoshi
 ### Acciones
 Listar tópicos públicos
 ```json
-{
-    "action": "list_topics"
-}
+{"action": "list_topics"}
 ```
 
 Suscribirse a tópicos públicos
 ```json
-{
-    "action": "suscribe",
-    "topic_name": "public_topic_to_suscribe"
-}
+{"action": "suscribe","topic_name": "public_topic_to_suscribe"}
 ```
 
 Suscribir usuarios a tópicos privados a los que pertenece un usuario

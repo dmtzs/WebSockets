@@ -20,7 +20,8 @@ disable=
     E1133,
     E1135,
     W0107,
-    R1702
+    R1702,
+    W1514
 
 [FORMAT]
 max-line-length=210

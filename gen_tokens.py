@@ -26,7 +26,7 @@ def encode_token(username: str, days:int=0, minutes:int=120, **kwargs) -> str:
         payload_core.update(kwargs)
 
 
-    return jwt.encode( payload, SECRET_KEY, algorithm="HS256")
+    return jwt.encode(payload_core, SECRET_KEY, algorithm="HS256")
 
 if __name__ == "__main__":
     # Definir los datos a incluir en el payload del token (pueden ser cualquier datos que quieras incluir)
@@ -34,5 +34,7 @@ if __name__ == "__main__":
         "description": "Test token"
     }
 
-    token = encode_token(username='satoshi', days=1, minutes=0, payload=payload)
-    print(token)
+    token = encode_token(username="memoor", days=1, minutes=0, payload=payload)
+    decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    print("\n"+token, end="\n\n")
+    print(decoded_token)
