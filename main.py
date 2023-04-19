@@ -163,7 +163,7 @@ class WebSocketHandler:
                     # TODO: Validate if message was sent, if not return false
         # clear the pending messages
         with open("pending_messages.json", "w") as file:
-            json.dump(pending_messages, file)
+            json.dump(pending_messages, file, indent=4)
 
     async def run(self) -> None:
         """
