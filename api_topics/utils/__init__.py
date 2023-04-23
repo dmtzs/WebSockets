@@ -129,12 +129,14 @@ def create_message(body:dict[str,str]) -> bool:
             "not_delivered_to_user_id_topic": [body["user"]]
         }
         # validate if the message already exists using content and topic_name
+        control_register = False
         for per_message in messages["messages"]:
             if per_message["content"] == new_register["content"] and per_message["topic_name"] == new_register["topic_name"]:
                 if body["user"] not in per_message["not_delivered_to_user_id_topic"]:
                     per_message["not_delivered_to_user_id_topic"].append(body["user"])
-            else:
-                messages.append(new_register)
+                    control_register = True
+        if not control_register:
+            messages["messages"].append(new_register)
         with open("pending_messages.json", "w") as file:
             json.dump(messages, file, indent=4)
         return True
@@ -181,7 +183,6 @@ def update_messages(messages:list[dict[str, list[str]|str|bool]], user:str) -> b
         # validates if the message already exists using content and topic_name and updates the not_delivered_to_user_id_topic deleting the user
         for per_message in messages_db["messages"]:
             for per_message_to_update in messages:
-                print(f"per_message_to_update: {per_message_to_update}")
                 if per_message["content"] == per_message_to_update["content"] and per_message["topic_name"] == per_message_to_update["topic_name"]:
                     if user in per_message["not_delivered_to_user_id_topic"]:
                         per_message["not_delivered_to_user_id_topic"].remove(user)

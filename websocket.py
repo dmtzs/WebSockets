@@ -43,9 +43,9 @@ class WebSocketHandler:
             print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
             URL = "http://localhost:5001/api/v1/messages"
             BODY = message
-            BODY |= {"user": self.username}
+            BODY |= {"user": recipient}
             response = requests.post(url=URL, json=BODY)
-            if response.status_code == 200:
+            if response.status_code == 201:
                 print(f"Message stored in database: {message}")
             else:
                 print(f"Message not stored in database, contact devs to solve: {message}")

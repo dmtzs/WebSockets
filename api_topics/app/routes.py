@@ -76,7 +76,7 @@ def messages_queues() -> Response:
     elif request.method == "POST":
         body:dict[str,str] = request.get_json()
         if isinstance(body, dict):
-            result = create_message(**body)
+            result = create_message(body)
             if result:
                 return make_response(jsonify({"message": "Message created"}), HTTPStatus.CREATED)
             else:
