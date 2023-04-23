@@ -115,7 +115,7 @@ def delete_topic(topic_name:str) -> bool:
         print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
     return False
 
-def create_message(body:dict[str,str]):
+def create_message(body:dict[str,str]) -> bool:
     """
     Creates a new pending messages
     """
@@ -137,10 +137,13 @@ def create_message(body:dict[str,str]):
                 messages.append(new_register)
         with open("pending_messages.json", "w") as file:
             json.dump(messages, file, indent=4)
+        return True
     except FileNotFoundError as e_f:
         print(f"The following FILE ERROR occurred in {__file__}: {e_f}")
+        return False
     except json.decoder.JSONDecodeError as e_j:
         print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
+        return False
 
 def get_messages(user:str):
     """
