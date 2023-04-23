@@ -1,41 +1,29 @@
 # API WS
 
-### Conexion
+### Connection and authenticate
 omar
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4MjQsImlhdCI6MTY4MTkxMjQyNCwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.xiXwJ8Z5LNSC35wBMjVw6V6Jn56wW7ltfPUH3_LXqR8
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkwMzUsImlhdCI6MTY4MjI2MjYzNSwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.BYeL0-7k_bM2BvLS0Me-vvd0om-WkXGSvuhm4WPuxWs
 ```
 
 diego
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4MDYsImlhdCI6MTY4MTkxMjQwNiwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXB0aW9uIjoiVGVzdCB0b2tlbiJ9fQ.8copNWFY6etWJBwrF11sMJ3WCYizKXjRAGsbRA4TY7U
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkwMDUsImlhdCI6MTY4MjI2MjYwNSwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXB0aW9uIjoiVGVzdCB0b2tlbiJ9fQ.yiS5HlCEoqUjW0pp9UerpymJJvD_07lJCCSMZr0vAf8
 ```
 
 satoshi
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg3NzksImlhdCI6MTY4MTkxMjM3OSwic3ViIjoic2F0b3NoaSIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.5QorLl_ITxLL4Br3PjlGAtjiwdKJ91DNHFyP6lFljrg
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkwNTcsImlhdCI6MTY4MjI2MjY1Nywic3ViIjoic2F0b3NoaSIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.Mxl6LujulMFeGWF7LvNG5G4NbFwp18HAQKoV7LgmhVM
 ```
 
 memoor
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE5OTg4NDQsImlhdCI6MTY4MTkxMjQ0NCwic3ViIjoibWVtb29yIiwicGF5bG9hZCI6eyJkZXNjcmlwdGlvbiI6IlRlc3QgdG9rZW4ifX0.AWAfwiKvEgfHEDOzrpcya0fUYUKantH_QQEXtie7tw4
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkxMTksImlhdCI6MTY4MjI2MjcxOSwic3ViIjoibWVtb29yIiwicGF5bG9hZCI6eyJkZXNjcmlwdGlvbiI6IlRlc3QgdG9rZW4ifX0.DNO5TU4ie8-gPWUx9BEtai1QD_3MyZg7tlDE7kRdcII
 ```
-
-### Autenticate
-
-omar
-{"action" : "authenticate", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTg3NDgsImlhdCI6MTY4MTc3MjM0OCwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcGNpb24iOiJjdWFscXVpZXJfY29zYSJ9fQ.wNEyAllFh4wVK_typ0ll2GGQBdIFq9a2MjJBK-5T0zM"}
-
-diego
-{"action" : "authenticate", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTc0MDAsImlhdCI6MTY4MTc3MTAwMCwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXBjaW9uIjoiY3VhbHF1aWVyX2Nvc2EifX0.OBt4FOwHzHEprbwLqh_3ErEgkyzEc6iNAyhCgDc-JEs"}
-
-satoshi
-{"action" : "authenticate", "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODE4NTg3NzgsImlhdCI6MTY4MTc3MjM3OCwic3ViIjoic2F0b3NoaSIsInBheWxvYWQiOnsiZGVzY3JpcGNpb24iOiJjdWFscXVpZXJfY29zYSJ9fQ.ZwyPrg1ZD19z3ydooBZAV1S8kHc-qXQG-S3-mYFUybg"}
-
 
 ### Acciones
 Listar tópicos públicos
@@ -62,6 +50,11 @@ Para mandar mensajes a un tópico o usuario en concreto, en donde se debe de sab
 de mensaje directo
 ```json
 {"action": "message","topic_name": "noticias","content": "Content of the message"}
+```
+
+Para desconectarse del servidor de la manera correcta:
+```json
+{"action": "disconnect"}
 ```
 
 Para traer mensajes faltantes de entregar al query de la base donde se manda mensajes se debe hacer por los tópicos a los 
@@ -94,4 +87,11 @@ Y para volver a la normalidad:
 
 ```
 Set-ExecutionPolicy Restricted
+```
+
+Para crear tópico:
+```json
+{
+    "topic_name": "the_topic_name"
+}
 ```

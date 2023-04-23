@@ -2,6 +2,7 @@ try:
     import jwt
     import json
     import asyncio
+    import requests
     import traceback
     import websockets
 except ImportError as err_imp:
@@ -12,6 +13,16 @@ class WebSocketHandler:
     def __init__(self, websocket):
         self.websocket = websocket
         self.username = None
+        self.heartbeat_task = None
+
+    async def send_heartbeat(self):
+        try:
+            await self.websocket.send(json.dumps({
+                "action": "heartbeat"
+            }))
+        except Exception as err:
+            print(f"Error sending heartbeat: {err}")
+            await self.websocket.close()
 
     # Función para enviar mensajes a otros usuarios
     async def send_message(self, recipient:str, message:dict[str, str]) -> None:
@@ -25,12 +36,19 @@ class WebSocketHandler:
         if recipient in CONNECTED_USERS:
             recipient_socket = CONNECTED_USERS[recipient]
             if isinstance(message, dict):
-                message = json.dumps(message)
-            await recipient_socket.websocket.send(message)
-            print(f"Message sent to destinatary: {recipient}: {message}")
+                message_to_send = json.dumps(message)
+                await recipient_socket.websocket.send(message_to_send)
+                print(f"Message sent to destinatary: {recipient}: {message_to_send}")
         else:
             print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
-            # PENDING_MESSAGES[recipient].append(message)
+            URL = "http://localhost:5001/api/v1/messages"
+            BODY = message
+            BODY |= {"user": self.username}
+            response = requests.post(url=URL, json=BODY)
+            if response.status_code == 200:
+                print(f"Message stored in database: {message}")
+            else:
+                print(f"Message not stored in database, contact devs to solve: {message}")
 
     async def authenticate(self, token: str) -> bool:
         """
@@ -51,20 +69,41 @@ class WebSocketHandler:
             print("Invalid token")
             return False
 
-    async def subscribe(self, topic_name:str) -> bool:# TODO: Still in development
+    async def subscribe(self, topic_name:str) -> bool:
         """
         Method to subscribe the user to a public topic.
 
         :param topic_name: The topic name that user wants to subscribe.
         :return: True if the user was subscribed, False otherwise.
         """
-        # Verificar que el canal exista y el usuario tenga permiso para suscribirse.
-        # if channel in CHANNELS and self.username in CHANNELS[channel]:
-        #     # Agregar al usuario a la lista de usuarios suscritos a este canal.
-        #     CHANNELS[channel].append(self.username)
-        #     return True
-        # else:
-        #     return False
+        URL = "http://localhost:5001/api/v1/topics"
+        PARAMS = {"topic_name": topic_name, "user": self.username}
+        try:
+            response = requests.put(url=URL, params=PARAMS)
+            if response.status_code == 200:
+                return True
+            return False
+        except Exception:
+            print(f"Error in subscribe: {traceback.format_exc()}")
+            return False
+    
+    async def create_topic(self, topic_name:str) -> bool:
+        """
+        Method to create a new topic.
+
+        :param topic_name: The topic name.
+        :return: True if the topic was created, False otherwise.
+        """
+        URL = "http://localhost:5001/api/v1/topics"
+        PARAMS = {"topic_name": topic_name, "user": self.username}
+        try:
+            response = requests.post(url=URL, params=PARAMS)
+            if response.status_code == 200:
+                return True
+            return False
+        except Exception:
+            print(f"Error in create_topic: {traceback.format_exc()}")
+            return False
         
     async def get_topic(self, topic_name:str) -> dict[str, str|bool]|None:
         """
@@ -73,12 +112,16 @@ class WebSocketHandler:
         :param topic_name: The topic name.
         :return: A dictionary with the topic information.
         """
-        with open("topics.json", "r") as file:
-            topic_info = json.load(file)
-        for topic in topic_info["topics"]:
-            if topic["topic_name"] == topic_name:
-                return topic
-        return None
+        URL = "http://localhost:5001/api/v1/topics"
+        PARAMS = {"topic_name": topic_name}
+        try:
+            response = requests.get(url=URL, params=PARAMS)
+            if response.status_code == 200:
+                return response.json()
+            return None
+        except Exception as err:
+            print(f"Error in get_topic: {traceback.format_exc()}")
+            return None
 
     async def handle_message(self, info_message:dict|None=None) -> None:
         """
@@ -151,19 +194,25 @@ class WebSocketHandler:
         Method to send updates of pending messages per user.
         :return: None
         """
-        # load from json file the pending messages to be sent
-        with open("pending_messages.json", "r") as file:
-            pending_messages = json.load(file)
-        # send the pending messages
-        for messages in pending_messages["messages"]:
-            for user in messages["not_delivered_to_user_id_topic"]:
-                if user == self.username:
-                    del messages["not_delivered_to_user_id_topic"]
-                    await self.send_message(recipient=user, message=messages)
-                    # TODO: Validate if message was sent, if not return false
-        # clear the pending messages
-        with open("pending_messages.json", "w") as file:
-            json.dump(pending_messages, file, indent=4)
+        URL = "http://localhost:5001/api/v1/messages"
+        PARAMS = {"user": self.username}
+        try:
+            response = requests.get(url=URL, params=PARAMS)
+            if response.status_code == 200:
+                pending_messages = response.json()
+                body_update = pending_messages
+                if len(pending_messages) > 0:
+                    for message in pending_messages["messages"]:
+                        del message["not_delivered_to_user_id_topic"]
+                        await self.send_message(recipient=self.username, message=message)
+                body_update |= {"user": self.username}
+                response = requests.put(url=URL, json=body_update)
+                if response.status_code == 200:
+                    print("Messages updated")
+                else:
+                    print("Error updating messages")
+        except Exception:
+            print(f"Error in send_updates: {traceback.format_exc()}")
 
     async def run(self) -> None:
         """
@@ -171,13 +220,15 @@ class WebSocketHandler:
 
         :return: None
         """
-        async for message in self.websocket:
-            print(f"Message received: {message}")
+        self.heartbeat_task = asyncio.create_task(self.send_heartbeat())
+        while True:
             try:
+                message = await asyncio.wait_for(self.websocket.recv(), timeout=30)# in seconds the timeout
+                print(f"Message received: {message}")
                 data = json.loads(message)
                 action = data['action']
 
-                if action == 'subscribe':
+                if action == "subscribe":
                     topic_name = data['topic_name']
                     subscribed = await self.subscribe(topic_name=topic_name)
                     if subscribed:
@@ -195,12 +246,34 @@ class WebSocketHandler:
                             "result": "error"
                         }))
 
-                elif action == 'message':
+                elif action == "create":
+                    topic_name = data["topic_name"]
+                    # Create the topic
+                    created = await self.create_topic(topic_name=topic_name)
+                    if created:
+                        # If the topic was created, send a confirmation message to the user.
+                        await self.websocket.send(json.dumps({
+                            "action": "create",
+                            "topic_name": topic_name,
+                            "result": "ok"
+                        }))
+                    else:
+                        # If the topic was not created, send an error message to the user.
+                        await self.websocket.send(json.dumps({
+                            "action": "create",
+                            "topic_name": topic_name,
+                            "result": "error"
+                        }))
+
+                elif action == "message":
                     info_message = {
                         "topic": data["topic_name"],
                         "message": data["content"]
                     }
                     await self.handle_message(info_message)
+
+                elif action == "disconnect":
+                    break
 
                 else:
                     # Unknown action
@@ -209,6 +282,14 @@ class WebSocketHandler:
                         "message": "Unknown action received",
                         "action": action
                     }
+            except asyncio.TimeoutError:
+                # Send a heartbeat to check if the connection is still alive
+                self.heartbeat_task = asyncio.create_task(self.send_heartbeat())
+            except websockets.exceptions.ConnectionClosedOK:
+                # Connection closed by the client
+                del CONNECTED_USERS[self.username]
+                print(f"Connection closed for user {self.username}")
+                break
             except Exception as err:
                 # Error at processing the message
                 print(f"Error at processing the message: {traceback.format_exc()}")
@@ -218,21 +299,12 @@ class WebSocketHandler:
                     "error": str(err)
                 }
                 await self.handle_message(info_message)
-        # Close the websocket connection
+
+        # Close the websocket connection and cancel the heartbeat task
+        self.heartbeat_task.cancel()
         await self.websocket.close()
 
-
 CONNECTED_USERS = {} # Dictionary to store connected users.
-# CHANNELS = {
-#     "public": {
-#         "usuarios": ["diego", "omar", "satoshi"],
-#         "topicos": ["noticias", "deportes"]
-#     },
-#     "private": {
-#         "usuarios": ["diego", "satoshi"],
-#         "topicos": ["trabajo"]
-#     }
-# }
 
 async def websocket_server(websocket, path: str) -> None:
     """

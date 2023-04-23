@@ -6,18 +6,21 @@
         },
         {
             "topic_name": "gdcode",
+            "creator": "memoor",
             "is_user": false,
-            "members": ["memoor"],
+            "members": ["memoor", "omar", "diego"],
             "is_private": true
         },
         {
             "topic_name": "noticias",
+            "creator": "diego",
             "is_user": false,
             "members": ["diego", "omar", "satoshi"],
             "is_private": false
         },
         {
             "topic_name": "general",
+            "creator": "diego",
             "is_user": false,
             "members": ["diego", "omar"],
             "is_private": false
