@@ -123,7 +123,7 @@ class WebSocketHandler:
             if response.status_code == 200:
                 return response.json()
             return None
-        except Exception as err:
+        except Exception:
             print(f"Error in get_topic: {traceback.format_exc()}")
             return None
 
