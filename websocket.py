@@ -229,63 +229,76 @@ class WebSocketHandler:
             try:
                 message = await asyncio.wait_for(self.websocket.recv(), timeout=30)# in seconds the timeout
                 print(f"Message received: {message}")
-                data = json.loads(message)
-                action = data['action']
+                data=None
+                try:
+                    data:dict[str,any] = json.loads(message)
+                except Exception:
+                    print(f"data sent from {self.username} is not a json")
+                finally:
+                    if data is not None:
+                        action = data.get("action")
+                        if action == "subscribe":
+                            topic_name = data['topic_name']
+                            subscribed = await self.subscribe(topic_name=topic_name)
+                            if subscribed:
+                                # Si la suscripción fue exitosa, enviar un mensaje de confirmación al usuario.
+                                await self.websocket.send(json.dumps({
+                                    "action": "subscribe",
+                                    "topic_name": topic_name,
+                                    "result": "ok"
+                                }))
+                            else:
+                                # Si la suscripción no fue exitosa, enviar un mensaje de error al usuario.
+                                await self.websocket.send(json.dumps({
+                                    "action": "subscribe",
+                                    "topic_name": topic_name,
+                                    "result": "error"
+                                }))
 
-                if action == "subscribe":
-                    topic_name = data['topic_name']
-                    subscribed = await self.subscribe(topic_name=topic_name)
-                    if subscribed:
-                        # Si la suscripción fue exitosa, enviar un mensaje de confirmación al usuario.
-                        await self.websocket.send(json.dumps({
-                            "action": "subscribe",
-                            "topic_name": topic_name,
-                            "result": "ok"
-                        }))
+                        elif action == "create":
+                            topic_name = data["topic_name"]
+                            # Create the topic
+                            created = await self.create_topic(topic_name=topic_name, is_private=data["is_private"])
+                            if created:
+                                # If the topic was created, send a confirmation message to the user.
+                                await self.websocket.send(json.dumps({
+                                    "action": "create",
+                                    "topic_name": topic_name,
+                                    "result": "ok"
+                                }))
+                            else:
+                                # If the topic was not created, send an error message to the user.
+                                await self.websocket.send(json.dumps({
+                                    "action": "create",
+                                    "topic_name": topic_name,
+                                    "result": "error"
+                                }))
+
+                        elif action == "message":
+                            info_message = {
+                                "topic": data["topic_name"],
+                                "message": data["content"]
+                            }
+                            await self.handle_message(info_message)
+
+                        elif action == "disconnect":
+                            break
+
+                        else:
+                            # Unknown action
+                            info_message = {
+                                "topic": "error",
+                                "message": "Unknown action received",
+                                "action": action
+                            }
+                            await self.handle_message(info_message)
                     else:
-                        # Si la suscripción no fue exitosa, enviar un mensaje de error al usuario.
-                        await self.websocket.send(json.dumps({
-                            "action": "subscribe",
-                            "topic_name": topic_name,
-                            "result": "error"
-                        }))
-
-                elif action == "create":
-                    topic_name = data["topic_name"]
-                    # Create the topic
-                    created = await self.create_topic(topic_name=topic_name, is_private=data["is_private"])
-                    if created:
-                        # If the topic was created, send a confirmation message to the user.
-                        await self.websocket.send(json.dumps({
-                            "action": "create",
-                            "topic_name": topic_name,
-                            "result": "ok"
-                        }))
-                    else:
-                        # If the topic was not created, send an error message to the user.
-                        await self.websocket.send(json.dumps({
-                            "action": "create",
-                            "topic_name": topic_name,
-                            "result": "error"
-                        }))
-
-                elif action == "message":
-                    info_message = {
-                        "topic": data["topic_name"],
-                        "message": data["content"]
-                    }
-                    await self.handle_message(info_message)
-
-                elif action == "disconnect":
-                    break
-
-                else:
-                    # Unknown action
-                    info_message = {
-                        "topic": "error",
-                        "message": "Unknown action received",
-                        "action": action
-                    }
+                        # No action
+                        info_message = {
+                            "topic": "error",
+                            "message": "No action received"
+                        }
+                        await self.handle_message(info_message)
             except asyncio.TimeoutError:
                 # Send a heartbeat to check if the connection is still alive
                 self.heartbeat_task = asyncio.create_task(self.send_heartbeat())
