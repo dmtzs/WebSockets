@@ -43,7 +43,7 @@ Suscribir usuarios a tópicos privados a los que pertenece un usuario
 
 Crear tópicos sean públicos o privados
 ```json
-{"action": "create","topic_name": "create_new_topic"}
+{"action": "create","topic_name": "create_new_topic", "is_private": true}
 ```
 
 Para mandar mensajes a un tópico o usuario en concreto, en donde se debe de saber el nombre del tópico o el usuario en caso

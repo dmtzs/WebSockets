@@ -87,7 +87,7 @@ class WebSocketHandler:
             print(f"Error in subscribe: {traceback.format_exc()}")
             return False
     
-    async def create_topic(self, topic_name:str) -> bool:
+    async def create_topic(self, topic_name:str, is_private:bool=False) -> bool:
         """
         Method to create a new topic.
 
@@ -95,10 +95,14 @@ class WebSocketHandler:
         :return: True if the topic was created, False otherwise.
         """
         URL = "http://localhost:5001/api/v1/topics"
-        PARAMS = {"topic_name": topic_name, "user": self.username}
+        BODY = {
+            "topic_name": topic_name,
+            "user": self.username,
+            "is_private": is_private
+        }
         try:
-            response = requests.post(url=URL, params=PARAMS)
-            if response.status_code == 200:
+            response = requests.post(url=URL, json=BODY)
+            if response.status_code == 201:
                 return True
             return False
         except Exception:
@@ -249,7 +253,7 @@ class WebSocketHandler:
                 elif action == "create":
                     topic_name = data["topic_name"]
                     # Create the topic
-                    created = await self.create_topic(topic_name=topic_name)
+                    created = await self.create_topic(topic_name=topic_name, is_private=data["is_private"])
                     if created:
                         # If the topic was created, send a confirmation message to the user.
                         await self.websocket.send(json.dumps({

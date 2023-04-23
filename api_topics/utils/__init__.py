@@ -51,11 +51,12 @@ def create_topic(topic_name:str,user:str,is_private:bool=False) -> bool:
             topics:list[dict[str, list[str]|str|bool]] = json.load(file)
         new_register = {
             "topic_name": topic_name,
+            "creator": user,
             "is_user": False,
             "members": [user],
             "is_private": is_private
         }
-        topics.append(new_register)
+        topics["topics"].append(new_register)
         with open("topics.json", "w") as file:
             json.dump(topics, file, indent=4)
         return True
