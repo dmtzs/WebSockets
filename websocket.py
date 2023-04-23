@@ -342,7 +342,7 @@ async def websocket_server(websocket, path: str) -> None:
         del CONNECTED_USERS[websocket_handler.username]
 
 if __name__ == "__main__":
-    # Code to run the WebSocket server
+    # Code to run the WebSocket server and loop
     print("Run server WS!")
     start_server = websockets.serve(websocket_server, "localhost", 5000)
     asyncio.get_event_loop().run_until_complete(start_server)
