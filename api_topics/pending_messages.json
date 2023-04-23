@@ -1,30 +1,22 @@
 {
-    "messages": [
+    "messages":[
         {
             "topic_name": "gdcode",
             "action": "message",
             "content": "Content of the message",
-            "not_delivered_to_user_id_topic": [
-                "memoor"
-            ]
+            "not_delivered_to_user_id_topic": ["memoor"]
         },
         {
             "topic_name": "general",
             "action": "message",
             "content": "Content of the message",
-            "not_delivered_to_user_id_topic": [
-                "diego",
-                "omar"
-            ]
+            "not_delivered_to_user_id_topic": ["diego", "omar"]
         },
         {
             "topic_name": "noticias",
             "action": "message",
             "content": "Content of the message",
-            "not_delivered_to_user_id_topic": [
-                "diego",
-                "omar"
-            ]
+            "not_delivered_to_user_id_topic": ["diego", "omar", "satoshi"]
         }
     ]
 }
