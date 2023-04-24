@@ -1,10 +1,6 @@
 {
     "topics": [
         {
-            "topic_name": "diego",
-            "is_user": true
-        },
-        {
             "topic_name": "gdcode",
             "creator": "memoor",
             "is_user": false,

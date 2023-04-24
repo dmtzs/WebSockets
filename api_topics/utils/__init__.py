@@ -66,7 +66,7 @@ def create_topic(topic_name:str,user:str,is_private:bool=False) -> bool:
         print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
     return False
 
-def update_topic(topic_name:str,user:str) -> bool:
+def update_topic(topic_name:str,user:str,user_source:str|None=None) -> bool:
     """
     Updates the members of a topic, for subscribe
 
@@ -78,19 +78,33 @@ def update_topic(topic_name:str,user:str) -> bool:
     """
     try:
         with open("topics.json", "r") as file:
-            topics:list[dict[str, list[str]|str|bool]] = json.load(file)
-        for per_topic in topics:
+            topics:list[dict[str,list[str]|str|bool]] = json.load(file)
+        for per_topic in topics["topics"]:
             if per_topic["topic_name"] == topic_name:
                 if not per_topic["is_private"] and user not in per_topic["members"]:
                     per_topic["members"].append(user)
                     with open("topics.json", "w") as file:
                         json.dump(topics, file, indent=4)
                     return True
+                if (per_topic["is_private"]) and (user not in per_topic["members"]):
+                    if user_source is not None and user_source in per_topic["members"]:
+                        per_topic["members"].append(user)
+                        with open("topics.json", "w") as file:
+                            json.dump(topics, file, indent=4)
+                        return True
+                    else:
+                        print("user source is None")
+                else:
+                    print("user already in topic or something else happen")
+            else:
+                print("topic not found")
+        return False
     except FileNotFoundError as e_f:
         print(f"The following FILE ERROR occurred in {__file__}: {e_f}")
+        return False
     except json.decoder.JSONDecodeError as e_j:
         print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
-    return False
+        return False
 
 def delete_topic(topic_name:str) -> bool:
     """
