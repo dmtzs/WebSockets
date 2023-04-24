@@ -40,7 +40,7 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         user = sys.argv[1]
-    token = encode_token(username=user, days=1, minutes=0, payload=payload)
-    decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    print("\n"+token, end="\n\n")
-    print(decoded_token)
+        token = encode_token(username=user, days=1, minutes=0, payload=payload)
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        print("\n"+token, end="\n\n")
+        print(decoded_token)
