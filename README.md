@@ -4,10 +4,6 @@ There are a lot of improvements that can be made but the focus of this project i
 
 ## Actions
 The actions that can be performed are the next ones:
-List public topics available.
-```json
-{"action": "list_topics"}
-```
 
 Subscribe to public topics.
 ```json
@@ -16,7 +12,7 @@ Subscribe to public topics.
 
 Subscribe users to private topics in which another user is part of.
 ```json
-{"action": "invite","topic_name": "private_topic_name_to_invite"}
+{"action": "invite","topic_name": "private_topic_name_to_invite","username": "eder"}
 ```
 
 Create topics, it can be publics or private.

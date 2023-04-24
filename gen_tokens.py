@@ -25,8 +25,6 @@ def encode_token(username: str, days:int=0, minutes:int=120, **kwargs) -> str:
     }
     if kwargs:
         payload_core.update(kwargs)
-
-
     return jwt.encode(payload_core, SECRET_KEY, algorithm="HS256")
 
 if __name__ == "__main__":

@@ -69,7 +69,7 @@ class WebSocketHandler:
             print("Invalid token")
             return False
 
-    async def subscribe(self, topic_name:str) -> bool:
+    async def subscribe(self, topic_name:str,user:str|None=None) -> bool:
         """
         Method to subscribe the user to a public topic.
 
@@ -77,9 +77,19 @@ class WebSocketHandler:
         :return: True if the user was subscribed, False otherwise.
         """
         URL = "http://localhost:5001/api/v1/topics"
-        PARAMS = {"topic_name": topic_name, "user": self.username}
+        if user is not None:
+            BODY = {
+                "topic_name": topic_name,
+                "user": user,
+                "user_source": self.username
+            }
+        else:
+            BODY = {
+                "topic_name": topic_name,
+                "user": self.username
+            }
         try:
-            response = requests.put(url=URL, params=PARAMS)
+            response = requests.put(url=URL, json=BODY)
             if response.status_code == 200:
                 return True
             return False
@@ -283,6 +293,24 @@ class WebSocketHandler:
 
                         elif action == "disconnect":
                             break
+
+                        elif action == "invite":
+                            topic_name = data["topic_name"]
+                            invited = await self.subscribe(topic_name=topic_name, user=data["username"])
+                            if invited:
+                                # If the invitation was sent, send a confirmation message to the user.
+                                await self.websocket.send(json.dumps({
+                                    "action": "invite",
+                                    "topic_name": topic_name,
+                                    "result": "ok"
+                                }))
+                            else:
+                                # If the invitation was not sent, send an error message to the user.
+                                await self.websocket.send(json.dumps({
+                                    "action": "invite",
+                                    "topic_name": topic_name,
+                                    "result": "error"
+                                }))
 
                         else:
                             # Unknown action
