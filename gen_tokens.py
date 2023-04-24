@@ -1,4 +1,5 @@
 try:
+    import sys
     import jwt
     from datetime import datetime, timedelta
 except ImportError as err_imp:
@@ -33,8 +34,13 @@ if __name__ == "__main__":
     payload = {
         "description": "Test token"
     }
-
-    token = encode_token(username="memoor", days=1, minutes=0, payload=payload)
+    # get user from terminal
+    if len(sys.argv) < 1:
+        print("Please provide a username")
+        sys.exit(1)
+    else:
+        user = sys.argv[1]
+    token = encode_token(username=user, days=1, minutes=0, payload=payload)
     decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     print("\n"+token, end="\n\n")
     print(decoded_token)
