@@ -113,6 +113,9 @@ Answer = The answer for this is that we need to take in consideration ssome thin
 2. How would you develop an algorithm that can identify and prevent fraudulent transactions on a financial platform?
 Answer = I think that we should comply with many things and some of them but not all of course are described below:
     1. Collect data: One of the most important thing in my consideration is to collect several data about, in this case, the transactions in which you can include for example data of the client, the type of the transaction, geographic location, transactions history, etc. Everything according to the necesity and the business branch if its the case you have more than one branch that manages money.
-    2. Identify patterns: 
+    2. Identify patterns: In this part should be used tecniques of data mining and maybe machine learning for data analyzing and detect patterns that can indicate a fraudulent transaction. It can be used algorithms such as decision trees, neural networks, etc.
+    3. Rules: Rules should be established after fraudulent patterns are identified, for example a user has been done transactions in mexico all the time but after a while they do a transaction in nigeria, so you can think about that if its something anomalous or if the user is only in vacations.
+    4. Check manually: A manual check should be done because after all the algorithms of before is not possible that all the time the algorithm willl do the things correctly so alway a human should do a double check if the algorithm doesnt detect something.
+    5. Updates: Finally the algorithm should be keep updating himself like an antivirus, so the algorithm needs too to be updated all the time when new patterns and practices are detected in the world.
 
 3. How would you build a scalable and reliable data processing pipeline that can handle large amounts of financial data from multiple sources?
