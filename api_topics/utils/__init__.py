@@ -1,7 +1,31 @@
 try:
     import json
+    import jwt
+    from datetime import datetime, timedelta
 except ImportError as e_imp:
     print(f"The following import ERROR occurred in {__file__}: {e_imp}")
+
+# Definir la clave secreta para firmar el token
+SECRET_KEY = "B7PwGjhYohg"
+
+def encode_token(username: str, days:int=1, minutes:int=0, **kwargs) -> str:
+    """
+    Method to generate a token for a user with a given expiration time.
+
+    :param username: Username of the user to generate the token for
+    :param days: Amount of days that the token will be valid
+    :param minutes: Amount of minutes that the token will be valid
+    :param kwargs: Any other data to include in the token payload
+    :return: The generated token
+    """
+    payload_core = {
+        'exp': datetime.utcnow() + timedelta(days=days, minutes=minutes),
+        'iat': datetime.utcnow(),
+        'sub': username
+    }
+    if kwargs:
+        payload_core.update(kwargs)
+    return jwt.encode(payload_core, SECRET_KEY, algorithm="HS256")
 
 def get_topics(user:str|None=None,topic_name:str|None=None) -> list[dict[str, list[str]|str|bool]] | dict[str, list[str]|str|bool]:
     """
