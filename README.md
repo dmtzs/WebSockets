@@ -51,14 +51,10 @@ And to go back to normality:
 Set-ExecutionPolicy Restricted
 ```
 
-About authentication for now I use a script which is `gen_tokens.py` in which to get the token according to X user you can use the next one:
-
-```
-python gen_tokens.py username
-```
+About authentication for the websocket server there is a endpoint that retrieves the same token to be used, as query params you should include yes or yes the user so the API can generate the token:
 
 So username word should be exactly the username that is going to be used to add to the connected users in the websocket API.
-After you get the token below the way to use it to authenticate to the websocket API. Of course this token generator should be better to implement through an API for example in which the client can consume that API to retrieve a token and finally go to the websocket API to authenticate and finally access to the websocket functionality.
+After you get the token below the way to use it to authenticate to the websocket API.
 
 ## Connection and authentication
 Below we can see some users created with the purpose to test the present exercise so in this case we are going to use wscat which is a nodejs dependency that can be installed through npm, this means also that you should have nodejs, you can click [here](https://nodejs.org/en/download) to go to the official page of nodejs and install it if its the case you want to test with wscat, so follow the instructions in that link.
@@ -96,6 +92,9 @@ In this case i took into consideration that the labor of deployment should be pa
 
 ## Unit tests
 In this part I wasnt able to create the unit tests because I have to break myself into several parts to fulfill the responsibilities of my current job and also the times when I should rest, otherwise I would be overloaded if I only code all the time, so I apologize for this case, but eventually I will upload them more calmly and having more time because I dont like to left projects incompleted when are at this point of development.
+
+# API
+This API is used by the same websocket service but also some of the endpoints here should be used from the client before going to the websocket server. The postman collection as an example can be found by clicking [here](https://github.com/dmtzs/SmartLockApi/wiki/postman-collection)
 
 # Conceptual challengue
 Below are the questions and answers for the conceptual challengue.

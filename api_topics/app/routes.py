@@ -2,7 +2,14 @@ try:
     from app import app
     from http import HTTPStatus
     from flask import Response, request, jsonify, make_response
-    from utils import get_topics, create_topic, update_topic, delete_topic, create_message, get_messages, update_messages
+    from utils import (get_topics,
+                       create_topic,
+                       update_topic,
+                       delete_topic,
+                       create_message,
+                       get_messages,
+                       update_messages,
+                       encode_token)
 except ImportError as e_imp:
     print(f"The following import ERROR occurred in {__file__}: {e_imp}")
 
@@ -92,3 +99,14 @@ def messages_queues() -> Response:
                 return make_response(jsonify({"message": "Message deleted"}), HTTPStatus.OK)
             else:
                 return make_response(jsonify({"message": "Message not deleted"}), HTTPStatus.BAD_REQUEST)
+            
+@app.route("/api/v1/gen_token", methods=["GET"])
+def gen_token() -> Response:
+    # get query params in dictionary
+    params = request.args.to_dict()
+    user = params.pop("user")
+    token = encode_token(username=user, days=1, minutes=0, payload=params)
+    if token:
+        return make_response(jsonify({"token": token}), HTTPStatus.OK)
+    else:
+        return make_response(jsonify({"message": "Token not generated"}), HTTPStatus.BAD_REQUEST)
