@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from websocket_service import WebSocketHandler
 
+
 class TestWebSocketHandler(unittest.TestCase):
     def setUp(self):
         self.websocket_mock = MagicMock()
@@ -32,11 +33,9 @@ class TestWebSocketHandler(unittest.TestCase):
         asyncio.run(self.websocket_handler.send_message("user2", {"content": "Hi"}))
         CONNECTED_USERS["user2"].websocket.send.assert_called_once_with('{"content": "Hi"}')
 
-        asyncio.run(self.websocket_handler.send_message("user3", {"content": "Hi"}))
-        self.assertEqual(self.websocket_handler.send_message.calls, [
-            unittest.mock.call("user3", {"content": "Hi"}),
-        ])
-        
+        with self.assertRaises(KeyError):
+            asyncio.run(self.websocket_handler.send_message("user3", {"content": "Hi"}))
+
     def test_authenticate(self):
         valid_token = jwt.encode({"sub": "user1"}, "B7PwGjhYohg", algorithm="HS256")
         invalid_token = "invalid_token"
@@ -71,6 +70,7 @@ class TestWebSocketHandler(unittest.TestCase):
                 "topic_name": "topic1",
                 "user": self.websocket_handler.username
             })
+
 
 # Ejecuta las pruebas
 if __name__ == "__main__":
