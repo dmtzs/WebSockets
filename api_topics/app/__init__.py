@@ -5,4 +5,4 @@ except ImportError as e_imp:
 
 app = Flask(__name__)
 
-from app import routes
+from app import routes, error_handlers

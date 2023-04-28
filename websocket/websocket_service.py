@@ -59,8 +59,8 @@ class WebSocketHandler:
         """
         try:
             # Verify the user token.
-            payload = jwt.decode(token, 'B7PwGjhYohg', algorithms=['HS256'])
-            self.username = payload['sub']
+            payload = jwt.decode(token, "B7PwGjhYohg", algorithms=["HS256"])
+            self.username = payload["sub"]
             CONNECTED_USERS[self.username] = self.websocket
             print(f"Connected user: {self.username}.")
             return True
@@ -95,28 +95,6 @@ class WebSocketHandler:
             return False
         except Exception:
             print(f"Error in subscribe: {traceback.format_exc()}")
-            return False
-    
-    async def create_topic(self, topic_name:str, is_private:bool=False) -> bool:
-        """
-        Method to create a new topic.
-
-        :param topic_name: The topic name.
-        :return: True if the topic was created, False otherwise.
-        """
-        URL = "http://localhost:5001/api/v1/topics"
-        BODY = {
-            "topic_name": topic_name,
-            "user": self.username,
-            "is_private": is_private
-        }
-        try:
-            response = requests.post(url=URL, json=BODY)
-            if response.status_code == 201:
-                return True
-            return False
-        except Exception:
-            print(f"Error in create_topic: {traceback.format_exc()}")
             return False
         
     async def get_topic(self, topic_name:str) -> dict[str, str|bool]|None:
@@ -261,25 +239,6 @@ class WebSocketHandler:
                                 # Si la suscripción no fue exitosa, enviar un mensaje de error al usuario.
                                 await self.websocket.send(json.dumps({
                                     "action": "subscribe",
-                                    "topic_name": topic_name,
-                                    "result": "error"
-                                }))
-
-                        elif action == "create":
-                            topic_name = data["topic_name"]
-                            # Create the topic
-                            created = await self.create_topic(topic_name=topic_name, is_private=data["is_private"])
-                            if created:
-                                # If the topic was created, send a confirmation message to the user.
-                                await self.websocket.send(json.dumps({
-                                    "action": "create",
-                                    "topic_name": topic_name,
-                                    "result": "ok"
-                                }))
-                            else:
-                                # If the topic was not created, send an error message to the user.
-                                await self.websocket.send(json.dumps({
-                                    "action": "create",
                                     "topic_name": topic_name,
                                     "result": "error"
                                 }))

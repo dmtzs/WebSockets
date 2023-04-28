@@ -15,11 +15,6 @@ Subscribe users to private topics in which another user is part of.
 {"action": "invite","topic_name": "private_topic_name_to_invite","username": "eder"}
 ```
 
-Create topics, it can be publics or private.
-```json
-{"action": "create","topic_name": "create_new_topic", "is_private": true}
-```
-
 To send messages to a topic or to a user in specific. In the topic name should be the user if its the case you want to send a directly message.
 ```json
 {"action": "message","topic_name": "noticias","content": "Content of the message"}
@@ -88,7 +83,7 @@ wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OD
 ```
 
 ## About deployment
-In this case i took into consideration that the labor of deployment should be part of devops, As you can see inside the folders `api_topics` and `websocket` there is inside a Dockerfile which is responsability of the same developer cause there you need to copy the files necessary to run the scrript and also to install all dependencies needed to run correctly the microservice. However, the deployment part should be configured by a devops or SRE area and using the Dockerfiles created by the developer, so thats why I dont remember how to do it cause in my actual jobs that part is fully dedicated to a devops or SRE team. But of course, if its needed I can learn.
+In this case i took into consideration that the labor of deployment should be part of devops, As you can see inside the folders `api_topics` and `websocket` there is inside a Dockerfile which is responsability of the same developer cause there you need to copy the files necessary to run the script and also to install all dependencies needed to run correctly the microservice. However, the deployment part should be configured by a devops or SRE area and using the Dockerfiles created by the developer, so thats why I dont remember how to do it cause in my actual jobs that part is fully dedicated to a devops or SRE team. But of course, if its needed I can learn.
 
 ## Unit tests
 In this part I wasnt able to create the unit tests because I have to break myself into several parts to fulfill the responsibilities of my current job and also the times when I should rest, otherwise I would be overloaded if I only code all the time, so I apologize for this case, but eventually I will upload them more calmly and having more time because I dont like to left projects incompleted when are at this point of development.
