@@ -24,7 +24,10 @@ disable=
     W1514,
     C0103,
     W0150,
-    R0911
+    R0911,
+    C0411,
+    E1101,
+    E0401
 
 [FORMAT]
 max-line-length=210

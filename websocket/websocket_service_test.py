@@ -73,6 +73,6 @@ class TestWebSocketHandler(unittest.TestCase):
             })
 
 # Ejecuta las pruebas
-if __name__ == '__main__':
+if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestWebSocketHandler)
     unittest.TextTestRunner(verbosity=2).run(suite)

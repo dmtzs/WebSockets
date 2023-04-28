@@ -25,5 +25,4 @@ jobs:
 
       - name: Run unit tests
         run: |
-          cd path/to/your/project
-          python -m unittest discover
+          python -m unittest discover -s websocket -p '*_test.py'
