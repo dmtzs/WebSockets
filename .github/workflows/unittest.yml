@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r websocket/requirements.txt
+          pip install -r api_topics/requirements.txt
 
       - name: Run unit tests
         run: |
