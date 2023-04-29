@@ -141,9 +141,9 @@ def delete_topic(topic_name:str) -> bool:
     try:
         with open("topics.json", "r") as file:
             topics:list[dict[str, list[str]|str|bool]] = json.load(file)
-        for per_topic in topics:
+        for per_topic in topics["topics"]:
             if per_topic["topic_name"] == topic_name:
-                topics.remove(per_topic)
+                topics["topics"].remove(per_topic)
                 with open("topics.json", "w") as file:
                     json.dump(topics, file, indent=4)
                 return True
