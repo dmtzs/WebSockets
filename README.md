@@ -64,12 +64,12 @@ Now commands below can be used to authenticate to the websocket server, in this 
 omar
 
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkwMzUsImlhdCI6MTY4MjI2MjYzNSwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJUZXN0IHRva2VuIn19.BYeL0-7k_bM2BvLS0Me-vvd0om-WkXGSvuhm4WPuxWs
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjc1OTUsImlhdCI6MTY4Mjc0MTE5NSwic3ViIjoib21hciIsInBheWxvYWQiOnsiZGVzY3JpcHRpb24iOiJBIHRva2VuIHRvIGF1dGhlbnRpY2F0ZSB0byB3ZWJzb2NrZXQgc2VydmVyIn19.J0edkFnsJ3_Vj3jCfBOA08JzPLN8CpQSOXVv5a6Xf-U
 ```
 
 diego
 ```
-wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzNDkwMDUsImlhdCI6MTY4MjI2MjYwNSwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXB0aW9uIjoiVGVzdCB0b2tlbiJ9fQ.yiS5HlCEoqUjW0pp9UerpymJJvD_07lJCCSMZr0vAf8
+wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4Mjc0MjgsImlhdCI6MTY4Mjc0MTAyOCwic3ViIjoiZGllZ28iLCJwYXlsb2FkIjp7ImRlc2NyaXB0aW9uIjoiQSB0b2tlbiB0byBhdXRoZW50aWNhdGUgdG8gd2Vic29ja2V0IHNlcnZlciJ9fQ.MzdeAK7lC3kZC8QZd0Q4WdnaqLvQlMUCHLuMUaIFghk
 ```
 
 satoshi
@@ -89,7 +89,7 @@ In this case i took into consideration that the labor of deployment should be pa
 In this part I wasnt able to create the unit tests because I have to break myself into several parts to fulfill the responsibilities of my current job and also the times when I should rest, otherwise I would be overloaded if I only code all the time, so I apologize for this case, but eventually I will upload them more calmly and having more time because I dont like to left projects incompleted when are at this point of development.
 
 # API
-This API is used by the same websocket service but also some of the endpoints here should be used from the client before going to the websocket server. The postman collection as an example can be found by clicking [here](https://github.com/dmtzs/SmartLockApi/wiki/postman-collection)
+This API is used by the same websocket service but also some of the endpoints here should be used from the client before going to the websocket server. The postman collection as an example can be found by clicking [here](https://github.com/dmtzs/WebSockets/wiki/postman-collection)
 
 # Conceptual challengue
 Below are the questions and answers for the conceptual challengue.
