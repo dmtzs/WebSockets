@@ -2,14 +2,10 @@ try:
     from app import app
     from http import HTTPStatus
     from flask import Response, request, jsonify, make_response
-    from utils import (get_topics,
-                       create_topic,
-                       update_topic,
-                       delete_topic,
-                       create_message,
-                       get_messages,
-                       update_messages,
-                       encode_token)
+    from utils import (get_topics,create_topic,update_topic,delete_topic,
+                       create_message,get_messages,update_messages,
+                       encode_token,
+                       get_users, create_user)
 except ImportError as e_imp:
     print(f"The following import ERROR occurred in {__file__}: {e_imp}")
 
@@ -110,3 +106,25 @@ def gen_token() -> Response:
         return make_response(jsonify({"token": token}), HTTPStatus.OK)
     else:
         return make_response(jsonify({"message": "Token not generated"}), HTTPStatus.BAD_REQUEST)
+    
+@app.route("/api/v1/users", methods=["GET", "POST"])
+def users_actions() -> Response:
+    """
+    This function handles the endpoints for the users.
+    """
+    if request.method == "GET":
+        resp = get_users()
+        if isinstance(resp, list):
+            return make_response(jsonify(resp), HTTPStatus.OK)
+        else:
+            return make_response(jsonify({"message": "No users found"}), HTTPStatus.NOT_FOUND)
+        
+    elif request.method == "POST":
+        body:dict[str,str] = request.get_json()
+        body["new_user"] = body.pop("user")
+        if isinstance(body, dict):
+            result = create_user(**body)
+            if result:
+                return make_response(jsonify({"message": "User created"}), HTTPStatus.CREATED)
+            else:
+                return make_response(jsonify({"message": "User not created"}), HTTPStatus.BAD_REQUEST)

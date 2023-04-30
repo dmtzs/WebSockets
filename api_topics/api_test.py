@@ -52,13 +52,17 @@ class FlaskAppTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_messages(self):
+        response = self.app.get("/api/v1/messages?user=diego")
+        self.assertEqual(response.status_code, 200)
+    
+    def test_get_messages_no_params(self):
         response = self.app.get("/api/v1/messages")
         self.assertEqual(response.status_code, 200)
 
     def test_create_message(self):
         data = {
             "user": "diego",
-            "topic_name": "test_topic",
+            "topic_name": "test_create_message",
             "content": "test_message_unittest"
         }
         headers = {
@@ -73,18 +77,18 @@ class FlaskAppTest(unittest.TestCase):
         data = {
             "messages": [
                 {
-                    "action": "message", 
-                    "content": "Content of the message",
+                    "action": "message",
+                    "content": "Content of the message 1",
                     "topic_name": "general"
                 },
                 {
                     "action": "message",
-                    "content": "Content of the message",
+                    "content": "Content of the message 2",
                     "topic_name": "noticias"
                 },
                 {
                     "action": "message",
-                    "content": "Content of the message",
+                    "content": "Content of the message 3",
                     "topic_name": "noticias"
                 }
             ],
@@ -97,6 +101,18 @@ class FlaskAppTest(unittest.TestCase):
                                 headers=headers,
                                 data=json.dumps(data))
         self.assertEqual(response.status_code, 200)
+
+    def test_get_users(self):
+        response = self.app.get("/api/v1/users")
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_user(self):
+        data = {
+            "user": "test_user"
+        }
+        response = self.app.post("/api/v1/users",
+                                 data=json.dumps(data))
+        self.assertEqual(response.status_code, 201)
 
     def test_gen_token(self):
         response = self.app.get("/api/v1/gen_token?user=test_user")
