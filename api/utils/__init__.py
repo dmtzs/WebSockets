@@ -233,3 +233,48 @@ def update_messages(messages:list[dict[str, list[str]|str|bool]], user:str) -> b
     except json.decoder.JSONDecodeError as e_j:
         print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
         return False
+    
+def get_users() -> list:
+    """
+    Gets the users
+
+    :return: A list of users
+    """
+    try:
+        with open("users.json", "r") as file:
+            users:list[dict[str, str|int]] = json.load(file)
+        return users["users"]
+    except FileNotFoundError as e_f:
+        print(f"The following FILE ERROR occurred in {__file__}: {e_f}")
+        return []
+    except json.decoder.JSONDecodeError as e_j:
+        print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
+        return []
+
+def create_user(new_user:str) -> bool:
+    """
+    Creates a new user
+
+    :param user: The user to create
+    :type user: str
+    :return: A boolean indicating if the user was created
+    """
+    try:
+        with open("users.json", "r") as file:
+            users:list[dict[str, str|int]] = json.load(file)
+        # validtes user id and with this creates a new user with the next id number that should be the last id + 1
+        last_id:int = max(user["id"] for user in users["users"])
+        new_reg_user = {
+            "id": last_id + 1,
+            "username": new_user
+        }
+        users["users"].append(new_reg_user)
+        with open("users.json", "w") as file:
+            json.dump(users, file, indent=4)
+        return True
+    except FileNotFoundError as e_f:
+        print(f"The following FILE ERROR occurred in {__file__}: {e_f}")
+        return False
+    except json.decoder.JSONDecodeError as e_j:
+        print(f"The following JSON ERROR occurred in {__file__}: {e_j}")
+        return False
