@@ -86,7 +86,12 @@ wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OD
 In this case i took into consideration that the labor of deployment should be part of devops, As you can see inside the folders `api_topics` and `websocket` there is inside a Dockerfile which is responsability of the same developer cause there you need to copy the files necessary to run the script and also to install all dependencies needed to run correctly the microservice. However, the deployment part should be configured by a devops or SRE area and using the Dockerfiles created by the developer, so thats why I dont remember how to do it cause in my actual jobs that part is fully dedicated to a devops or SRE team. But of course, if its needed I can learn.
 
 ## Unit tests
-In this part I wasnt able to create the unit tests because I have to break myself into several parts to fulfill the responsibilities of my current job and also the times when I should rest, otherwise I would be overloaded if I only code all the time, so I apologize for this case, but eventually I will upload them more calmly and having more time because I dont like to left projects incompleted when are at this point of development.
+About the API was easier to create unit tests cause as a backend developer I create unit test all the time that I create a new API. In this case the unit tests for the API runs in the github action designed for this. If you want to run locally the unit tests then you should go inside the api folder and run the next command:
+```
+python -m unittest api_test
+```
+
+For the websocket I wasnt able to create the unit tests because one, I haven't created tests for a websocket before so I'll have to do some more research on how to Mock the answer of the websocket and also the API responses inside the websocket and write so I have to break myself into several parts to fulfill the responsibilities of my current job and also the times when I should rest, otherwise I would be overloaded if I only code all the time, so I apologize for this case, but eventually I will upload them more calmly and having more time because I dont like to left projects incompleted when are at this point of development.
 
 # API
 This API is used by the same websocket service but also some of the endpoints here should be used from the client before going to the websocket server. The postman collection as an example can be found by clicking [here](https://github.com/dmtzs/WebSockets/wiki/postman-collection)
@@ -103,6 +108,7 @@ Answer = The answer for this is that we need to take in consideration ssome thin
     4. Integrations: The system should be compatible with many payment systems to offer a wide range of options to users.
     5. Tests: The system should be tested a lot to be sure that works as expected and also to be sure that is completely resilient to anomalies and to errors so we can understand what is happening if something happens and not only the developers, but also the client can have a little bit of context withput compromising the system security.
     6. Audits: The system should be audited periodically to guarantee the security standards and compliance.
+    7. Document the flow: All this should be documented so we can go back and see if some improvements can be made.
 
 2. How would you develop an algorithm that can identify and prevent fraudulent transactions on a financial platform?
 Answer = I think that we should comply with many things and some of them but not all of course are described below:
@@ -111,5 +117,16 @@ Answer = I think that we should comply with many things and some of them but not
     3. Rules: Rules should be established after fraudulent patterns are identified, for example a user has been done transactions in mexico all the time but after a while they do a transaction in nigeria, so you can think about that if its something anomalous or if the user is only in vacations.
     4. Check manually: A manual check should be done because after all the algorithms of before is not possible that all the time the algorithm willl do the things correctly so alway a human should do a double check if the algorithm doesnt detect something.
     5. Updates: Finally the algorithm should be keep updating himself like an antivirus, so the algorithm needs too to be updated all the time when new patterns and practices are detected in the world.
+    6. Document the algorithm: Document the algorithm so we can mantain the code and do improvements.
 
 3. How would you build a scalable and reliable data processing pipeline that can handle large amounts of financial data from multiple sources?
+Answer = I think that an idea could be something like below:
+    Define the requirements and goals: Determine what data needs to be collected, what insights need to be derived, and what the end goal of the data processing pipeline is.
+    1. Select the right technology stack: Choose the right technology stack that can handle large amounts of data, provides scalability, and is reliable. Technologies such as Apache Kafka, Apache Spark, Apache Flink, Hadoop, and AWS Kinesis are popular choices for data processing pipelines.
+    2. Design the data architecture: Design a data architecture that can handle the volume, variety, and velocity of financial data from multiple sources. This includes defining the data model, data storage, and data processing techniques.
+    3. Implement data collection and preprocessing: Develop data collection and preprocessing modules that can collect data from various sources, clean and preprocess the data, and store it in a suitable format.
+    4. Develop data processing modules: Develop data processing modules that can perform various operations on the data, such as filtering, aggregation, transformation, and analysis.
+    5. Test and optimize: Test the data processing pipeline to ensure that it meets the requirements and goals defined in step 1. Optimize the pipeline for performance, scalability, and reliability.
+    6. Monitor and maintain: Monitor the data processing pipeline for any issues and maintain it regularly to ensure its smooth operation.
+    7. Ensure data security and privacy: Implement measures to ensure the security and privacy of financial data, such as encryption, access control, and data anonymization.
+    8. Document the pipeline: Document the data processing pipeline to make it easier for others to understand and use.
