@@ -83,7 +83,7 @@ wscat -c ws://localhost:5000/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OD
 ```
 
 ## About deployment
-In this case i took into consideration that the labor of deployment should be part of devops, As you can see inside the folders `api_topics` and `websocket` there is inside a Dockerfile which is responsability of the same developer cause there you need to copy the files necessary to run the script and also to install all dependencies needed to run correctly the microservice. However, the deployment part should be configured by a devops or SRE area and using the Dockerfiles created by the developer, so thats why I dont remember how to do it cause in my actual jobs that part is fully dedicated to a devops or SRE team. But of course, if its needed I can learn.
+In this case i took into consideration that the labor of deployment should be part of devops, As you can see inside the folders `api` and `websocket` there is inside a Dockerfile which is responsability of the same developer cause there you need to copy the files necessary to run the script and also to install all dependencies needed to run correctly the microservice. However, the deployment part should be configured by a devops or SRE area and using the Dockerfiles created by the developer, so thats why I dont remember how to do it cause in my actual jobs that part is fully dedicated to a devops or SRE team. But of course, if its needed I can learn.
 
 ## Unit tests
 About the API was easier to create unit tests cause as a backend developer I create unit test all the time that I create a new API. In this case the unit tests for the API runs in the github action designed for this. If you want to run locally the unit tests then you should go inside the api folder and run the next command:

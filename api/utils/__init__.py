@@ -263,7 +263,7 @@ def create_user(new_user:str) -> bool:
         with open("users.json", "r") as file:
             users:list[dict[str, str|int]] = json.load(file)
         # validtes user id and with this creates a new user with the next id number that should be the last id + 1
-        last_id:int = max([user["id"] for user in users["users"]])
+        last_id:int = max(user["id"] for user in users["users"])
         new_reg_user = {
             "id": last_id + 1,
             "username": new_user
