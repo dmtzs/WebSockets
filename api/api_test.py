@@ -110,7 +110,11 @@ class FlaskAppTest(unittest.TestCase):
         data = {
             "user": "test_user"
         }
+        headers = {
+            "Content-Type": "application/json"
+        }
         response = self.app.post("/api/v1/users",
+                                 headers=headers,
                                  data=json.dumps(data))
         self.assertEqual(response.status_code, 201)
 
