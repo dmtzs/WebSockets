@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/github/stars/dmtzs/WebSockets">
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/dmtzs/WebSockets">
 </p>
-​
+
 <p align="center">
   <img src="https://img.shields.io/github/languages/code-size/dmtzs/WebSockets">
   <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/dmtzs/WebSockets">
