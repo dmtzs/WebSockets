@@ -123,7 +123,7 @@ class FlaskAppTest(unittest.TestCase):
         params = "user=test_user&description=A token to authenticate to websocket server&password=jsndojsdofsm"
         # Add Actio header
         headers = {
-            "Action": "decode"
+            "Action": "encode"
         }
         response = self.app.get("/api/v1/token?" + params,
                                 headers=headers)
