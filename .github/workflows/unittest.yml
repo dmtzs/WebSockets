@@ -24,7 +24,8 @@ jobs:
           pip install -r api/requirements.txt
 
       - name: Copy JSON files
-        run: cp api/pending_messages.json api/topics.json api/users.json $GITHUB_WORKSPACE
+        # run: cp api/pending_messages.json api/topics.json api/users.json $GITHUB_WORKSPACE
+        run: cp -r api/* $GITHUB_WORKSPACE
 
       - name: Run unit tests
         run: |
