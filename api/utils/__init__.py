@@ -1,14 +1,21 @@
 try:
-    import json
+    import os
     import jwt
+    import json
+    from dotenv import load_dotenv
     from datetime import datetime, timedelta
 except ImportError as e_imp:
     print(f"The following import ERROR occurred in {__file__}: {e_imp}")
 
 # Definir la clave secreta para firmar el token
-SECRET_KEY = "B7PwGjhYohg"
+if os.path.exists("secret.env"):
+    load_dotenv("secret.env")
+    SECRET_KEY = os.getenv("SECRET_KEY")
+else:
+    print("No secret.env file found")
+    raise SystemExit
 
-def encode_token(username: str, days:int=1, minutes:int=0, **kwargs) -> str:
+def encode_token(username: str, days:int=1, minutes:int=0, **kwargs) -> str|None:
     """
     Method to generate a token for a user with a given expiration time.
 
@@ -16,16 +23,44 @@ def encode_token(username: str, days:int=1, minutes:int=0, **kwargs) -> str:
     :param days: Amount of days that the token will be valid
     :param minutes: Amount of minutes that the token will be valid
     :param kwargs: Any other data to include in the token payload
-    :return: The generated token
+    :return: The generated token or None if an error occurred
     """
-    payload_core = {
-        'exp': datetime.utcnow() + timedelta(days=days, minutes=minutes),
-        'iat': datetime.utcnow(),
-        'sub': username
-    }
-    if kwargs:
-        payload_core.update(kwargs)
-    return jwt.encode(payload_core, SECRET_KEY, algorithm="HS256")
+    try:
+        payload_core = {
+            "exp": datetime.utcnow() + timedelta(days=days, minutes=minutes),
+            "iat": datetime.utcnow(),
+            "sub": username
+        }
+        if kwargs:
+            payload_core |= kwargs # merge the two dictionaries
+        return jwt.encode(payload_core, SECRET_KEY, algorithm=os.getenv("ALGORITHM"))
+    except Exception as e:
+        print(f"The following ERROR occurred in {__file__}: {e}")
+        return None
+
+def decode_token(token:str) -> dict[str,str]|None:
+    """
+    Method to decode a token and extract the payload.
+
+    :param token: The token to decode
+    :type token: str
+    :return: The decoded token payload
+    """
+    try:
+        token = jwt.decode(token, SECRET_KEY, algorithms=[os.getenv("ALGORITHM")])
+        # decode iat and exp to human readable format in new keys
+        token["iat_readable"] = datetime.fromtimestamp(token["iat"]).strftime("%Y-%m-%d %H:%M:%S")
+        token["exp_readable"] = datetime.fromtimestamp(token["exp"]).strftime("%Y-%m-%d %H:%M:%S")
+        return token
+    except jwt.ExpiredSignatureError:
+        print("Signature expired. Please log in again.")
+        return None
+    except jwt.InvalidTokenError:
+        print("Invalid token. Please log in again.")
+        return None
+    except Exception as e:
+        print(f"The following ERROR occurred in {__file__}: {e}")
+        return None
 
 def get_topics(user:str|None=None,topic_name:str|None=None) -> list[dict[str, list[str]|str|bool]] | dict[str, list[str]|str|bool]:
     """

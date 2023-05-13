@@ -118,8 +118,8 @@ class FlaskAppTest(unittest.TestCase):
                                  data=json.dumps(data))
         self.assertEqual(response.status_code, 201)
 
-    def test_gen_token(self):
-        response = self.app.get("/api/v1/gen_token?user=test_user")
+    def test_token(self):
+        response = self.app.get("/api/v1/token?user=test_user")
         self.assertEqual(response.status_code, 200)
 
 if __name__ == "__main__":

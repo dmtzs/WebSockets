@@ -4,7 +4,7 @@ try:
     from flask import Response, request, jsonify, make_response
     from utils import (get_topics,create_topic,update_topic,delete_topic,
                        create_message,get_messages,update_messages,
-                       encode_token,
+                       encode_token, decode_token,
                        get_users, create_user)
 except ImportError as e_imp:
     print(f"The following import ERROR occurred in {__file__}: {e_imp}")
@@ -96,16 +96,30 @@ def messages_queues() -> Response:
             else:
                 return make_response(jsonify({"message": "Message not deleted"}), HTTPStatus.BAD_REQUEST)
             
-@app.route("/api/v1/gen_token", methods=["GET"])
-def gen_token() -> Response:
-    # get query params in dictionary
-    params = request.args.to_dict()
-    user = params.pop("user")
-    token = encode_token(username=user, days=1, minutes=0, payload=params)
-    if token:
-        return make_response(jsonify({"token": token}), HTTPStatus.OK)
+@app.route("/api/v1/token", methods=["GET"])
+def token() -> Response:
+    # Validates if Action header exists
+    if "Action" not in request.headers:
+        return make_response(jsonify({"message": "Action header not found"}), HTTPStatus.BAD_REQUEST)
     else:
-        return make_response(jsonify({"message": "Token not generated"}), HTTPStatus.BAD_REQUEST)
+        action = request.headers["Action"]
+        if action == "encode":
+            # get query params in dictionary
+            params = request.args.to_dict()
+            user = params.pop("user")
+            token = encode_token(username=user, days=1, minutes=0, payload=params)
+            if token:
+                return make_response(jsonify({"token": token}), HTTPStatus.OK)
+            else:
+                return make_response(jsonify({"message": "Token not generated"}), HTTPStatus.BAD_REQUEST)
+        elif action == "decode":
+            # get token from params
+            token = request.args.get("token")
+            token = decode_token(token)
+            if isinstance(token, dict):
+                return make_response(jsonify(token), HTTPStatus.OK)
+            else:
+                return make_response(jsonify({"message": "Token not decoded"}), HTTPStatus.BAD_REQUEST)
     
 @app.route("/api/v1/users", methods=["GET", "POST"])
 def users_actions() -> Response:
