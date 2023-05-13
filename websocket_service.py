@@ -62,7 +62,7 @@ class WebSocketHandler:
         try:
             # Verify the user token.
             payload = jwt.decode(token, "B7PwGjhYohg", algorithms=["HS256"])
-            self.username = payload["sub"]
+            self.username = payload["username"]
             CONNECTED_USERS[self.username] = self.websocket
             print(f"Connected user: {self.username}.")
             return True
