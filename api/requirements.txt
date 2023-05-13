@@ -1,4 +1,0 @@
-Flask==2.2.3
-PyJWT==2.6.0
-gevent==22.10.2
-python-dotenv==1.0.0
