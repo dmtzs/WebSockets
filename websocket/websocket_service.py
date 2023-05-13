@@ -1,10 +1,13 @@
 try:
+    import os
     import jwt
     import json
     import asyncio
     import requests
     import traceback
     import websockets
+    from http import HTTPStatus
+    from dotenv import load_dotenv
 except ImportError as err_imp:
     print(f"The following import error occurred: {err_imp}")
 
@@ -40,11 +43,11 @@ class WebSocketHandler:
                 print(f"Message sent to destinatary: {recipient}: {message_to_send}")
         else:
             print(f"Destinatary {recipient} not connected, message stored to be delivered later.")
-            URL = "http://localhost:5001/api/v1/messages"
+            URL = os.getenv("URL_LOCAL_MESSAGES")
             BODY = message
             BODY |= {"user": recipient}
             response = requests.post(url=URL, json=BODY)
-            if response.status_code == 201:
+            if response.status_code == HTTPStatus.CREATED.value:
                 print(f"Message stored in database: {message}")
             else:
                 print(f"Message not stored in database, contact devs to solve: {message}")
@@ -75,7 +78,7 @@ class WebSocketHandler:
         :param topic_name: The topic name that user wants to subscribe.
         :return: True if the user was subscribed, False otherwise.
         """
-        URL = "http://localhost:5001/api/v1/topics"
+        URL = os.getenv("URL_LOCAL_TOPICS")
         if user is not None:
             BODY = {
                 "topic_name": topic_name,
@@ -89,7 +92,7 @@ class WebSocketHandler:
             }
         try:
             response = requests.put(url=URL, json=BODY)
-            if response.status_code == 200:
+            if response.status_code == HTTPStatus.OK.value:
                 return True
             return False
         except Exception:
@@ -103,11 +106,11 @@ class WebSocketHandler:
         :param topic_name: The topic name.
         :return: A dictionary with the topic information.
         """
-        URL = "http://localhost:5001/api/v1/topics"
+        URL = os.getenv("URL_LOCAL_TOPICS")
         PARAMS = {"topic_name": topic_name}
         try:
             response = requests.get(url=URL, params=PARAMS)
-            if response.status_code == 200:
+            if response.status_code == HTTPStatus.OK.value:
                 return response.json()
             return None
         except Exception:
@@ -185,11 +188,11 @@ class WebSocketHandler:
         Method to send updates of pending messages per user.
         :return: None
         """
-        URL = "http://localhost:5001/api/v1/messages"
+        URL = os.getenv("URL_LOCAL_MESSAGES")
         PARAMS = {"user": self.username}
         try:
             response = requests.get(url=URL, params=PARAMS)
-            if response.status_code == 200:
+            if response.status_code == HTTPStatus.OK.value:
                 pending_messages = response.json()
                 body_update = pending_messages
                 if len(pending_messages) > 0:
@@ -198,7 +201,7 @@ class WebSocketHandler:
                         await self.send_message(recipient=self.username, message=message)
                 body_update |= {"user": self.username}
                 response = requests.put(url=URL, json=body_update)
-                if response.status_code == 200:
+                if response.status_code == HTTPStatus.OK.value:
                     print("Messages updated")
                 else:
                     print("Error updating messages")
@@ -214,7 +217,7 @@ class WebSocketHandler:
         self.heartbeat_task = asyncio.create_task(self.send_heartbeat())
         while True:
             try:
-                message = await asyncio.wait_for(self.websocket.recv(), timeout=30)# in seconds the timeout
+                message = await asyncio.wait_for(self.websocket.recv(), timeout=30) # in seconds the timeout
                 print(f"Message received: {message}")
                 data=None
                 try:
@@ -330,6 +333,10 @@ async def websocket_server(websocket, path: str) -> None:
 if __name__ == "__main__":
     # Code to run the WebSocket server and loop
     print("Run server WS!")
+    if os.path.exists("env_vars.env"):
+        dotenv_path = os.path.join(os.path.dirname(__file__), "env_vars.env")
+        load_dotenv(dotenv_path)
+        print("Local environment variables loaded")
     start_server = websockets.serve(websocket_server, "localhost", 5000)
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
