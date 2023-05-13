@@ -114,10 +114,10 @@ def token() -> Response:
                 return make_response(jsonify({"message": "Token not generated"}), HTTPStatus.BAD_REQUEST)
         elif action == "decode":
             # get token from params
-            token = request.args.get("token")
-            token = decode_token(token)
-            if isinstance(token, dict):
-                return make_response(jsonify(token), HTTPStatus.OK)
+            decoded_token = request.args.get("token")
+            decoded_token = decode_token(decoded_token)
+            if isinstance(decoded_token, dict):
+                return make_response(jsonify(decoded_token), HTTPStatus.OK)
             else:
                 return make_response(jsonify({"message": "Token not decoded"}), HTTPStatus.BAD_REQUEST)
     
