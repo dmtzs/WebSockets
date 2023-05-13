@@ -337,6 +337,8 @@ if __name__ == "__main__":
         dotenv_path = os.path.join(os.path.dirname(__file__), "env_vars.env")
         load_dotenv(dotenv_path)
         print("Local environment variables loaded")
+    else:
+        print("Local environment variables not found, using the system environment variables")
     start_server = websockets.serve(websocket_server, "localhost", 5000)
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
