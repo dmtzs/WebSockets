@@ -1,6 +1,7 @@
 import json
 import unittest
 from app import app
+from http import HTTPStatus
 
 class FlaskAppTest(unittest.TestCase):
 
@@ -9,7 +10,7 @@ class FlaskAppTest(unittest.TestCase):
 
     def test_get_topics(self):
         response = self.app.get("/api/v1/topics?topic_name=gdcode")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_create_topic(self):
         data = {
@@ -23,7 +24,7 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.post("/api/v1/topics",
                                  headers=headers,
                                  data=json.dumps(data))
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED.value)
 
     def test_update_topic_members(self):
         data = {
@@ -37,7 +38,7 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.put("/api/v1/topics",
                                 headers=headers,
                                 data=json.dumps(data))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_delete_topic(self):
         data = {
@@ -49,15 +50,15 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.delete("/api/v1/topics",
                                    headers=headers,
                                    data=json.dumps(data))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_get_messages(self):
         response = self.app.get("/api/v1/messages?user=diego")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
     
     def test_get_messages_no_params(self):
         response = self.app.get("/api/v1/messages")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_create_message(self):
         data = {
@@ -71,7 +72,7 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.post("/api/v1/messages",
                                  headers=headers,
                                  data=json.dumps(data))
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED.value)
 
     def test_update_messages(self):
         data = {
@@ -100,11 +101,11 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.put("/api/v1/messages",
                                 headers=headers,
                                 data=json.dumps(data))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_get_users(self):
         response = self.app.get("/api/v1/users")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_create_user(self):
         data = {
@@ -116,11 +117,17 @@ class FlaskAppTest(unittest.TestCase):
         response = self.app.post("/api/v1/users",
                                  headers=headers,
                                  data=json.dumps(data))
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED.value)
 
     def test_token(self):
-        response = self.app.get("/api/v1/token?user=test_user")
-        self.assertEqual(response.status_code, 200)
+        params = "user=test_user&description=A token to authenticate to websocket server&password=jsndojsdofsm"
+        # Add Actio header
+        headers = {
+            "Action": "decode"
+        }
+        response = self.app.get("/api/v1/token?" + params,
+                                headers=headers)
+        self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
 if __name__ == "__main__":
     unittest.main()
