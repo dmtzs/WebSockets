@@ -11,6 +11,7 @@ try:
 except ImportError as err_imp:
     print(f"The following import error occurred: {err_imp}")
 
+
 class WebSocketHandler:
     def __init__(self, websocket):
         self.websocket = websocket
