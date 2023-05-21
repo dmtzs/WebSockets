@@ -18,7 +18,14 @@ class WebSocketHandler:
         self.username = None
         self.heartbeat_task = None
 
-    async def send_heartbeat(self):
+    async def send_heartbeat(self) -> None:
+        """
+        Method to send a heartbeat to the client.
+
+        Returns:
+            None
+        """
+        
         try:
             await self.websocket.send(json.dumps({
                 "action": "heartbeat"
@@ -28,13 +35,16 @@ class WebSocketHandler:
             await self.websocket.close()
 
     # Función para enviar mensajes a otros usuarios
-    async def send_message(self, recipient:str, message:dict[str, str]) -> None:
+    async def send_message(self, recipient: str, message: dict[str, str]) -> None:
         """
         Method to send a message to a recipient.
 
-        :param recipient: The recipient username.
-        :param message: The message to send in dict format.
-        :return: None
+        Args:
+            recipient (str): The recipient username.
+            message (dict[str, str]): The message to be sent.
+
+        Returns:
+            None
         """
         if recipient in CONNECTED_USERS:
             recipient_socket = CONNECTED_USERS[recipient]
@@ -57,27 +67,38 @@ class WebSocketHandler:
         """
         Method to authenticate the user.
 
-        :param token: The user token.
-        :return: True if the token is valid, False otherwise.
+        Args:
+            token (str): The user token.
+
+        Returns:
+            bool: True if the user is authenticated, False otherwise.
         """
         try:
             # Verify the user token.
-            payload = jwt.decode(token, "B7PwGjhYohg", algorithms=["HS256"])
+            secret_jwt = os.getenv("SECRET_JWT")
+            if secret_jwt is None:
+                raise Exception("The JWT secret is not defined.")
+            payload = jwt.decode(token, secret_jwt, algorithms=["HS256"])
             self.username = payload["username"]
             CONNECTED_USERS[self.username] = self.websocket
             print(f"Connected user: {self.username}.")
             return True
         except:
             # Si el token no es válido.
+            print(traceback.format_exc())
             print("Invalid token")
             return False
 
-    async def subscribe(self, topic_name:str,user:str|None=None) -> bool:
+    async def subscribe(self, topic_name: str, user: str|None=None) -> bool:
         """
         Method to subscribe the user to a public topic.
 
-        :param topic_name: The topic name that user wants to subscribe.
-        :return: True if the user was subscribed, False otherwise.
+        Args:
+            topic_name (str): The topic name to subscribe.
+            user (str, optional): The user to subscribe to a private topic. Defaults to None.
+
+        Returns:
+            bool: True if the subscription was successful, False otherwise.
         """
         URL = os.getenv("URL_LOCAL_TOPICS")
         if user is not None:
@@ -100,12 +121,15 @@ class WebSocketHandler:
             print(f"Error in subscribe: {traceback.format_exc()}")
             return False
         
-    async def get_topic(self, topic_name:str) -> dict[str, str|bool]|None:
+    async def get_topic(self, topic_name: str) -> dict[str, str|bool]|None:
         """
         Method to get the topic information.
 
-        :param topic_name: The topic name.
-        :return: A dictionary with the topic information.
+        Args:
+            topic_name (str): The topic name to get the information.
+
+        Returns:
+            dict[str, str|bool]|None: The topic information or None if the topic doesn't exist.
         """
         URL = os.getenv("URL_LOCAL_TOPICS")
         PARAMS = {"topic_name": topic_name}
@@ -118,12 +142,15 @@ class WebSocketHandler:
             print(f"Error in get_topic: {traceback.format_exc()}")
             return None
 
-    async def handle_message(self, info_message:dict|None=None) -> None:
+    async def handle_message(self, info_message: dict|None=None) -> None:
         """
         Method to handle incoming messages and be sent to the correct destinataries.
 
-        :param info_message: The message to be sent.
-        :return: None
+        Args:
+            info_message (dict, optional): The message to be sent. Defaults to None.
+
+        Returns:
+            None
         """
         try:
             if info_message is not None:
@@ -187,7 +214,9 @@ class WebSocketHandler:
     async def send_updates(self) -> None:
         """
         Method to send updates of pending messages per user.
-        :return: None
+
+        Returns:
+            None
         """
         URL = os.getenv("URL_LOCAL_MESSAGES")
         PARAMS = {"user": self.username}
@@ -213,7 +242,8 @@ class WebSocketHandler:
         """
         Method to run the WebSocketHandler.
 
-        :return: None
+        Returns:
+            None
         """
         self.heartbeat_task = asyncio.create_task(self.send_heartbeat())
         while True:
@@ -318,8 +348,12 @@ async def websocket_server(websocket, path: str) -> None:
     Function to accept incoming WebSocket connections and validate
     credentials if are correct.
 
-    :param websocket: The WebSocket connection.
-    :param path: The path of the WebSocket connection like url params.
+    Args:
+        websocket: WebSocket connection.
+        path(str): Path of the WebSocket connection.
+
+    Returns:
+        None
     """
     websocket_handler = WebSocketHandler(websocket)
     access = await websocket_handler.authenticate(token=path[1:])
