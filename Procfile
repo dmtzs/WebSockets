@@ -1,1 +1,1 @@
-web: gunicorn -b 0.0.0.0:$PORT -k gevent run_app:app
+web: python -m asyncio -m websockets -m websocket_service

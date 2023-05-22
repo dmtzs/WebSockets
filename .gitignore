@@ -1,6 +1,7 @@
 # Own files to ignore
 post_events.py
 gen_tokens.py
+env_vars.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
